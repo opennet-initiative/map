@@ -9,9 +9,9 @@
 		}
     	</style>
 	<link rel="stylesheet" href="/static/openlayers/ol.css" type="text/css">
-	<script src="http://openlayers.org/en/v3.4.0/build/ol.js" type="text/javascript"></script>
+	<script src="/static/openlayers/ol.js" type="text/javascript"></script>
 </head>
-	<body onload="init();" style="background-color: #B5D0D0">
+	<body style="background-color: #B5D0D0">
 		<div id="map" class="map"></div>
 		 <script type="text/javascript">
 		      var map = new ol.Map({
@@ -21,6 +21,14 @@
 			  new ol.layer.Tile({
 			    source: new ol.source.MapQuest({layer: 'osm'})
 			  }),
+			  new ol.layer.Vector({
+				title: 'accesspoints',
+				source: new ol.source.GeoJSON({
+				  url: '/api/accesspoints',
+				  projection: 'EPSG:3857',
+				}),
+			  })
+			  /* #TODO: wir müssen wohl manuell einen layerswitcher nachrüsten
 			new ol.layer.Image({
 			    //extent: [-13884991, 2870341, -7455066, 6338219],
 			    source: new ol.source.ImageWMS({
@@ -28,19 +36,22 @@
 			      params: {'LAYERS': 'adv_dop'},
 			      serverType: 'geoserver'
 			    })
-			  })
+			  }),
+			  */
 			],
 			view: new ol.View({
-			  center: ol.proj.transform([52, 12], 'EPSG:4326', 'EPSG:3857'),
-			  zoom: 4
+			  center: ol.proj.transform([12.5876, 54.0118], 'EPSG:4326', 'EPSG:3857'),
+			  zoom: 09,
+			  projection: 'EPSG:3857'
 			})
 		      });
+
 			var geolocation = new ol.Geolocation({
 			    projection: 'EPSG:3857',
 			    tracking: true
 			});
 
-			geolocation.on('change', function(evt) {
+			geolocation.once('change', function(evt) {
 			  console.log(geolocation.getPosition());
 			  map.getView().setCenter(geolocation.getPosition());
 			  map.getView().setZoom(16);

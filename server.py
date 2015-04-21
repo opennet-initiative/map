@@ -5,14 +5,15 @@ def listAccesspoints():
     apiformat = request.query.format or 'json'
     if apiformat == "json":
         response.content_type = 'text/json; charset=UTF8'
-        return "{text: 'hello world'}"
+        f = open('./tests/dump_accesspoints_legacy.json', 'r')
+        return f.read()
 
 @route('/static/<filepath:path>')
 def server_static(filepath):
-    return static_file(filepath, root='/home/matthias/workspace/on_map/static/')
+    return static_file(filepath, root='./static/')
 
 @route('/')
-def hello(name='World'):
-    return template('map', name=name)
+def hello():
+    return template('map')
 
 run(host='localhost', port=8080, debug=True)
