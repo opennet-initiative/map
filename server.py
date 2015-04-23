@@ -1,4 +1,5 @@
 from bottle import route, template, request, response, run, static_file
+import logging
 
 @route('/api/accesspoints')
 def listAccesspoints():
@@ -16,4 +17,6 @@ def server_static(filepath):
 def hello():
     return template('map')
 
+logging.basicConfig(filename='server.log', format=logging.BASIC_FORMAT)
+logging.info("karten server gestartet")
 run(host='localhost', port=8080, debug=True)
