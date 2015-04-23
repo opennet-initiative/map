@@ -4,10 +4,8 @@ import geronimo_api
 
 class Test(unittest.TestCase):
 
-
     def setUp(self):
         self.api = geronimo_api.Api()
-
 
     def testLive(self):
         aps = self.api.getAccesspoints()
