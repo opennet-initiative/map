@@ -2,3 +2,4 @@
 .project
 .pydevproject
 ol-debug.js
+*.log
