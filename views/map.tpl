@@ -9,9 +9,27 @@
 		height: 100%;
 		width: 100%;
 		}
+		
 		#popup {
 			
 		}
+		
+		#info {
+        position: absolute;
+        height: 1px;
+        width: 1px;
+        z-index: 100;
+      }
+      .tooltip.in {
+        opacity: 1;
+        filter: alpha(opacity=100);
+      }
+      .tooltip.top .tooltip-arrow {
+        border-top-color: white;
+      }
+      .tooltip-inner {
+        border: 2px solid white;
+      }
     	</style>
 	<link rel="stylesheet" href="/static/openlayers/ol.css" type="text/css">
 	<script src="/static/openlayers/ol.js" type="text/javascript"></script>
@@ -22,6 +40,7 @@
 	<body style="background-color: #B5D0D0">
 		<div id="map" class="map">
 			<div id="popup"></div>
+			<div id="info"></div>
 		</div>
 		 <script type="text/javascript">
 			 var container = document.getElementById('popup');
@@ -96,7 +115,7 @@
 					$(element).popover('destroy');
 				  }
 				});
-				
+
 				$(map.getViewport()).on('mousemove', function(e) {
 				  var pixel = map.getEventPixel(e.originalEvent);
 				  var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
@@ -108,6 +127,39 @@
 					map.getTarget().style.cursor = '';
 				  }
 				});
+			
+				
+			var info = $('#info');
+			info.tooltip({
+			  animation: false,
+			  trigger: 'manual'
+			});
+			
+			var displayFeatureInfo = function(pixel) {
+			  info.css({
+				left: pixel[0] + 'px',
+				top: (pixel[1] - 15) + 'px'
+			  });
+			  var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+				return feature;
+			  });
+			  if (feature) {
+				info.tooltip('hide')
+					.attr('data-original-title', getApId(feature.get('main_ip')))
+					.tooltip('fixTitle')
+					.tooltip('show');
+			  } else {
+				info.tooltip('hide');
+			  }
+			};
+			
+			map.on('pointermove', function(evt) {
+			  if (evt.dragging) {
+				info.tooltip('hide');
+				return;
+			  }
+			  displayFeatureInfo(map.getEventPixel(evt.originalEvent));
+			});
 
 			var geolocation = new ol.Geolocation({
 			    projection: 'EPSG:3857',
@@ -119,6 +171,10 @@
 			  map.getView().setCenter(geolocation.getPosition());
 			  map.getView().setZoom(16);
 			});
+			
+			function getApId(ip){
+				return ip.replace("192.168.","");
+			}
 		</script>
 	</body>
 </html>
