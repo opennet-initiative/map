@@ -10,7 +10,7 @@
 		width: 100%;
 		}
 		#popup {
-			padding-bottom: 45px;
+			
 		}
     	</style>
 	<link rel="stylesheet" href="/static/openlayers/ol.css" type="text/css">
