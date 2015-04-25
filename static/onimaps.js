@@ -5,18 +5,12 @@ function setupMap() {
 		target: document.getElementById('map'),
 		controls: ol.control.defaults().extend([new ol.control.FullScreen()]),
 		layers: [
+			//Hintergrundkarten
 			new ol.layer.Tile({
 				source: new ol.source.MapQuest({layer: 'osm'})
 			}),
-			new ol.layer.Vector({
-			title: 'accesspoints',
-			source: new ol.source.GeoJSON({
-				url: '/api/accesspoints',
-				projection: 'EPSG:3857',
-			}),
-			})
 			/* #TODO: wir müssen wohl manuell einen layerswitcher nachrüsten
-		new ol.layer.Image({
+			new ol.layer.Image({
 				//extent: [-13884991, 2870341, -7455066, 6338219],
 				source: new ol.source.ImageWMS({
 					url: 'http://www.geodaten-mv.de/dienste/adv_dop',
@@ -25,11 +19,39 @@ function setupMap() {
 				})
 			}),
 			*/
+			//ONI-Daten
+			new ol.layer.Vector({
+			title: 'accesspoints',
+			source: new ol.source.GeoJSON({
+				url: '/api/accesspoints',
+				projection: 'EPSG:3857',
+			}),
+			}),
+			getHeadquarter()
 		],
 		view: new ol.View({
 			center: ol.proj.transform([12.5876, 54.0118], 'EPSG:4326', 'EPSG:3857'),
 			zoom: 9,
 			projection: 'EPSG:3857'
+		})
+	});
+}
+
+function getHeadquarter(){
+	var hqFeature = new ol.Feature({
+		geometry: new ol.geom.Point(ol.proj.transform([12.12311,54.09137], 'EPSG:4326', 'EPSG:3857')),
+		name: 'Vereinsraum'
+	});
+	var hqStyle = new ol.style.Style({
+	  image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+		opacity: 0.75,
+		src: 'static/headquarter.png'
+	  })),
+	});
+	hqFeature.setStyle(hqStyle);
+	return new ol.layer.Vector({
+		source: new ol.source.Vector({
+			features: [hqFeature]
 		})
 	});
 }
