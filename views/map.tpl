@@ -47,6 +47,7 @@
 		</div>
 		<script type="text/javascript">
 			setupMap();
+			setupPermalinks();
 			setupPopup();
 			setupTooltip();
 			setupGeolocation();

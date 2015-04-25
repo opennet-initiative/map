@@ -1,9 +1,23 @@
 var map;
 
 function setupMap() {
+	var zoom = 9, center = [12.5876, 54.0118];
+	if (window.location.hash !== '') {
+	  var hash = window.location.hash.replace('#', '');
+	  var parts = hash.split(';');
+	  if (parts.length === 3) {
+		zoom = parseInt(parts[0], 10);
+		center = [
+		  parseFloat(parts[1]),
+		  parseFloat(parts[2])
+		];
+	  }
+	}
 	map = new ol.Map({
 		target: document.getElementById('map'),
-		controls: ol.control.defaults().extend([new ol.control.FullScreen()]),
+		controls: ol.control.defaults().extend([
+			new ol.control.FullScreen(),
+			new ol.control.ScaleLine()]),
 		layers: [
 			//Hintergrundkarten
 			new ol.layer.Tile({
@@ -30,8 +44,8 @@ function setupMap() {
 			getHeadquarter()
 		],
 		view: new ol.View({
-			center: ol.proj.transform([12.5876, 54.0118], 'EPSG:4326', 'EPSG:3857'),
-			zoom: 9,
+			center: ol.proj.transform(center, 'EPSG:4326', 'EPSG:3857'),
+			zoom: zoom,
 			projection: 'EPSG:3857'
 		})
 	});
@@ -53,6 +67,15 @@ function getHeadquarter(){
 		source: new ol.source.Vector({
 			features: [hqFeature]
 		})
+	});
+}
+
+function setupPermalinks(){
+	map.on('moveend', function() {
+		var view = map.getView();
+		var center = view.getCenter();
+		center = ol.proj.transform(center, 'EPSG:3857', 'EPSG:4326'),
+		window.location.hash = view.getZoom() + ';' + center[0] + ';' + center[1];
 	});
 }
 
