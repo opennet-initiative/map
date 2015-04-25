@@ -1,21 +1,9 @@
-var container = document.getElementById('popup');
-var content = document.getElementById('popup-content');
-var closer = document.getElementById('popup-closer');
-var overlay = new ol.Overlay(({
-  element: container,
-  autoPan: true,
-  autoPanAnimation: {
-	duration: 250
-	}
-}));
-
 var map;
 
 function setupMap() {
 	map = new ol.Map({
 		target: document.getElementById('map'),
 		controls: ol.control.defaults().extend([new ol.control.FullScreen()]),
-		overlays: [overlay],
 		layers: [
 			new ol.layer.Tile({
 				source: new ol.source.MapQuest({layer: 'osm'})
