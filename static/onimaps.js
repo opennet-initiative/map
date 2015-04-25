@@ -1,6 +1,7 @@
 var map;
 
 function setupMap() {
+	//permalinks parsen
 	var zoom = 9, center = [12.5876, 54.0118];
 	if (window.location.hash !== '') {
 	  var hash = window.location.hash.replace('#', '');
@@ -13,6 +14,12 @@ function setupMap() {
 		];
 	  }
 	}
+	//Karte
+	var overlayGroup = new ol.layer.Group({
+        title: 'Opennet',
+        layers: [
+        ]
+    });
 	map = new ol.Map({
 		target: document.getElementById('map'),
 		controls: ol.control.defaults().extend([
@@ -20,28 +27,29 @@ function setupMap() {
 			new ol.control.ScaleLine()]),
 		layers: [
 			//Hintergrundkarten
-			new ol.layer.Tile({
-				source: new ol.source.MapQuest({layer: 'osm'})
+			new ol.layer.Group({
+				'title': 'Hintergrund',
+				'layers': [
+					new ol.layer.Tile({
+						title: 'MapQuest',
+						type: 'base',
+						visible: true,
+						source: new ol.source.MapQuest({layer: 'osm'})
+					}),
+					new ol.layer.Image({
+						//extent: [-13884991, 2870341, -7455066, 6338219],
+						title: 'Luftbilder LAiV',
+						type: 'base',
+						visible: false,
+						source: new ol.source.ImageWMS({
+							url: 'http://www.geodaten-mv.de/dienste/adv_dop',
+							params: {'LAYERS': 'adv_dop'},
+							serverType: 'geoserver'
+						})
+					}),
+				]
 			}),
-			/* #TODO: wir müssen wohl manuell einen layerswitcher nachrüsten
-			new ol.layer.Image({
-				//extent: [-13884991, 2870341, -7455066, 6338219],
-				source: new ol.source.ImageWMS({
-					url: 'http://www.geodaten-mv.de/dienste/adv_dop',
-					params: {'LAYERS': 'adv_dop'},
-					serverType: 'geoserver'
-				})
-			}),
-			*/
-			//ONI-Daten
-			new ol.layer.Vector({
-			title: 'accesspoints',
-			source: new ol.source.GeoJSON({
-				url: '/api/accesspoints',
-				projection: 'EPSG:3857',
-			}),
-			}),
-			getHeadquarter()
+			overlayGroup
 		],
 		view: new ol.View({
 			center: ol.proj.transform(center, 'EPSG:4326', 'EPSG:3857'),
@@ -49,6 +57,19 @@ function setupMap() {
 			projection: 'EPSG:3857'
 		})
 	});
+	var layerSwitcher = new ol.control.LayerSwitcher({tipLabel: 'Legende'})
+    map.addControl(layerSwitcher);
+    //ONI-Daten
+	overlayGroup.getLayers().extend([
+		new ol.layer.Vector({
+		title: 'Accesspoints',
+		source: new ol.source.GeoJSON({
+			url: '/api/accesspoints',
+			projection: 'EPSG:3857',
+			}),
+		}),
+		getHeadquarter()]
+    );
 }
 
 function getHeadquarter(){
@@ -64,6 +85,7 @@ function getHeadquarter(){
 	});
 	hqFeature.setStyle(hqStyle);
 	return new ol.layer.Vector({
+		title: 'Vereinsraum',
 		source: new ol.source.Vector({
 			features: [hqFeature]
 		})
