@@ -124,7 +124,8 @@ function setupPopup(){
 			$(element).popover({
 				'placement': 'top',
 				'html': true,
-				'content': feature.get('main_ip')
+				'title': feature.get('main_ip'),
+				'content': getPopupContent(feature.get('main_ip'))
 			});
 			$(element).popover('show');
 		} else {
@@ -143,6 +144,14 @@ function setupPopup(){
 		map.getTarget().style.cursor = '';
 		}
 	});
+}
+
+function getPopupContent(ip){
+	gauge="<p><img width='247' height='137px' src='http://www.opennet-initiative.de/graph/ap.php?ap="+getApId(ip)+"&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=day'/></p>"
+	device ="Gerät: "
+	os = "OS: "
+	lastseen = "Zuletzt gesehen: "
+	return gauge+lastseen+device+os;
 }
 
 function setupTooltip(){
