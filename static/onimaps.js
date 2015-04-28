@@ -156,7 +156,10 @@ function getPopupContent(ip){
 	device ="Gerät: "
 	os = "OS: "
 	lastseen = "Zuletzt gesehen: "
-	return gauge+lastseen+device+os;
+	links = "<a href='"+getApId(ip)+"'>Wiki</a> "
+	links = links +"<a href='"+ip+"'>Webinterface</a> "
+	links = links +"<a href='"+ip+":8080'>OLSRd</a> "
+	return gauge+lastseen+device+os+"<br>"+links;
 }
 
 function setupTooltip(){
