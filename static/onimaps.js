@@ -40,11 +40,16 @@ function setupMap() {
 						//extent: [-13884991, 2870341, -7455066, 6338219],
 						title: 'Luftbilder LAiV',
 						type: 'base',
-						visible: false,
+						visible: false,						
 						source: new ol.source.ImageWMS({
 							url: 'http://www.geodaten-mv.de/dienste/adv_dop',
 							params: {'LAYERS': 'adv_dop'},
-							serverType: 'geoserver'
+							serverType: 'geoserver',
+							attributions: [
+								new ol.Attribution({
+								html: '<img src="http://www.geoportal-mv.de/land-mv/GeoPortalMV_prod/de/_Bilder/favicon.ico">'+'Luftbilder &copy; ' +
+									'<a href="http://www.geoportal-mv.de/land-mv/GeoPortalMV_prod/de/Geowebdienste/index.jsp">Landesamt für innere Verwaltung Mecklenburg-Vorpommern - Amt für Geoinformation, Vermessungs- und Katasterwesen</a>'
+								})],
 						})
 					}),
 				]
