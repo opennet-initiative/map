@@ -73,6 +73,13 @@ function setupMap() {
 			projection: 'EPSG:3857',
 			}),
 		}),
+		new ol.layer.Vector({
+		title: 'Links',
+		source: new ol.source.GeoJSON({
+			url: '/api/links',
+			projection: 'EPSG:3857',
+			}),
+		}),
 		getHeadquarter()]
     );
 }
