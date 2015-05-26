@@ -1,6 +1,6 @@
 import logging
 import requests
-from primitives import Accesspoint
+from primitives import Accesspoint, Link
 
 class Api(object):
     '''
@@ -38,6 +38,37 @@ class Api(object):
     def getAccesspoints(self):
         ''''returns all Accesspoints as objects'''
         r = requests.get("http://api.opennet-initiative.de/api/v1/accesspoint/?format=json")
-        return self.__parseAccesspoint(r.json())
+        self.aps=self.__parseAccesspoint(r.json()) #TODO: Externalise
+        return self.aps
+    
+    def __parseLinks(self,json,aps):
+        ls =[]
+        for item in json:
+            ep1=item["endpoints"][0]
+            ep2=item["endpoints"][1]
+            ip1= ep1["interface"]["ip_address"]
+            ip2= ep2["interface"]["ip_address"]
+            lq = ep1["quality"]
+            rlq = ep1["quality"]
+            try:
+                link = Link(aps[ip1],aps[ip2],lq,rlq)
+                ls.append(link)
+            except KeyError:
+                logging.info("Link zu unbekanntem AP (%s - %s)" % (ip1,ip2))
+        return ls
+    
+    def __getAPasDict(self,apList):
+        dic={}
+        for ap in apList:
+            dic[ap.main_ip]=ap
+        return dic
+    
+    def getLinks(self):
+        ''''returns all links between Accesspoints as objects'''
+        r = requests.get("http://api.opennet-initiative.de/api/v1/link/?format=json")
+        if not hasattr(self,"aps"):
+            self.getAccesspoints()
+        apDict = self.__getAPasDict(self.aps)
+        return self.__parseLinks(r.json(),apDict)
         
         

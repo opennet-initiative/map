@@ -6,4 +6,13 @@ class Accesspoint(object):
         self.main_ip=main_ip
         self.lat=lat
         self.lon=lon
-        
+
+class Link(object):
+    '''
+    Minimale Link Informationen
+    '''
+    def __init__(self,ap1,ap2,lq,rlq):
+        self.ap1 = ap1
+        self.ap2 = ap2
+        self.lq = lq
+        self.rlq = rlq
