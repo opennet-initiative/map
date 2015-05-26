@@ -130,16 +130,18 @@ function setupPopup(){
 		return feature;
 	  });
 	  if (feature) {
-			var geometry = feature.getGeometry();
-			var coord = geometry.getCoordinates();
-			popup.setPosition(coord);
-			$(element).popover({
-				'placement': 'top',
-				'html': true,
-				'title': feature.get('main_ip'),
-				'content': getPopupContent(feature.get('main_ip'))
-			});
-			$(element).popover('show');
+		  if(feature.get('main_ip')){
+				var geometry = feature.getGeometry();
+				var coord = geometry.getCoordinates();
+				popup.setPosition(coord);
+				$(element).popover({
+					'placement': 'top',
+					'html': true,
+					'title': feature.get('main_ip'),
+					'content': getPopupContent(feature.get('main_ip'))
+				});
+				$(element).popover('show');
+			}
 		} else {
 			$(element).popover('destroy');
 		}
@@ -148,12 +150,14 @@ function setupPopup(){
 	$(map.getViewport()).on('mousemove', function(e) {
 		var pixel = map.getEventPixel(e.originalEvent);
 		var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-		return true;
+			if (feature.get('main_ip')){
+				return true;
+			}
 		});
 		if (hit) {
-		map.getTarget().style.cursor = 'pointer';
+			map.getTarget().style.cursor = 'pointer';
 		} else {
-		map.getTarget().style.cursor = '';
+			map.getTarget().style.cursor = '';
 		}
 	});
 }
@@ -186,10 +190,12 @@ function setupTooltip(){
 		return feature;
 	  });
 	  if (feature) {
-		info.tooltip('hide')
-			.attr('data-original-title', getApId(feature.get('main_ip')))
-			.tooltip('fixTitle')
-			.tooltip('show');
+		  if(feature.get('main_ip')){
+			info.tooltip('hide')
+				.attr('data-original-title', getApId(feature.get('main_ip')))
+				.tooltip('fixTitle')
+				.tooltip('show');
+		}
 	  } else {
 		info.tooltip('hide');
 	  }
