@@ -148,8 +148,8 @@ function setupPopup(){
 				$(element).popover({
 					'placement': 'top',
 					'html': true,
-					'title': feature.get('main_ip'),
-					'content': getPopupContent(feature.get('main_ip'))
+					'title': "<h1>"+feature.get('main_ip')+"</h1><small>"+feature.get('post_address')+"</small>",
+					'content': getPopupContent(feature)
 				});
 				$(element).popover('show');
 			}
@@ -173,15 +173,44 @@ function setupPopup(){
 	});
 }
 
-function getPopupContent(ip){
-	gauge="<p><img width='247' height='137px' src='http://www.opennet-initiative.de/graph/ap.php?ap="+getApId(ip)+"&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=day'/></p>"
-	device ="Gerät: "
-	os = "OS: "
-	lastseen = "Zuletzt gesehen: "
-	links = "<a href='"+getApId(ip)+"'>Wiki</a> "
-	links = links +"<a href='"+ip+"'>Webinterface</a> "
-	links = links +"<a href='"+ip+":8080'>OLSRd</a> "
-	return gauge+lastseen+device+os+"<br>"+links;
+function getPopupContent(feature){
+	function toTimeString(totalNumberOfSeconds) {
+	 var days = parseInt( totalNumberOfSeconds / (3600*24) );
+	 var hours = parseInt( totalNumberOfSeconds / 3600 );
+	 var minutes = parseInt( (totalNumberOfSeconds - (hours * 3600)) / 60 );
+	 var seconds = Math.floor((totalNumberOfSeconds - ((hours * 3600) + (minutes * 60))));
+	 return (days < 10 ? "0" + days : days) + ":" + (hours < 10 ? "0" + hours : hours) + ":";
+	}
+	
+	ip=feature.get('main_ip');
+	gauge="<p><img width='247' height='137px' src='http://www.opennet-initiative.de/graph/ap.php?ap="+getApId(ip)+"&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=day'/></p>";
+	device=feature.get('device_model');
+	board=feature.get('device_board');
+	os_type = feature.get('firmware_type');
+	os_ver = feature.get('firmware_release_name');
+	load = feature.get('system_load_15min');
+	lastseen = feature.get('timestamp');
+	uptime = feature.get('system_uptime');
+	installtime = feature.get('firmware_install_timestamp');
+	operator = "Betreut von: <a>"+feature.get('owner')+"</a>"
+	links = "<a href='"+getApId(ip)+"'>Wiki</a> ";
+	links = links +"<a href='"+ip+"'>Webinterface</a> ";
+	links = links +"<a href='"+ip+":8080'>OLSRd</a> ";
+	return gauge+
+			+"<p>"
+			+device+" <small>("+board+")</small><br>"
+			+os_type+" <small>("+os_ver+")</small><br>"
+			+"CPU-Auslastung: "+load+ "<br>"
+			+ operator
+			+"</p>"+
+			+"<p>"+'<dl class="dl-horizontal">'
+			+"<dt>Zuletzt gesehen</dt><dd>"+lastseen+"</dd>"
+			+"<dt>Neustart am </dt><dd>"+toTimeString(parseFloat(uptime))+"</dd>"
+			+"<dt>Installation vom</dt><dd>"+installtime+"</dd>"
+			+'</dl>'+"</p>"
+			+"<br>"+links;
+	// ["opennet_version","opennet_wifidog_enabled"]
+	//UGW
 }
 
 function setupTooltip(){

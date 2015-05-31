@@ -23,6 +23,10 @@ class Api(threading.Thread):
             self.updateAccesspoints()
             self.updateLinks()
             time.sleep(self.API_INTERVALL)
+    
+    def __AddAccesspointProperties(self,ap,item,properties):
+        for prop in properties:
+            ap.properties[prop]=item[prop]
         
     
     def __parsePoint(self, wkt):
@@ -43,6 +47,7 @@ class Api(threading.Thread):
                 try:
                     lat, lon = self.__parsePoint(pos)
                     ap = Accesspoint(item["main_ip"], lat, lon)
+                    self.__AddAccesspointProperties(ap,item,["main_ip","device_model","device_board","system_uptime","owner","system_load_15min","firmware_type","firmware_release_name","opennet_version","firmware_install_timestamp","opennet_wifidog_enabled","post_address"])
                     ls.append(ap)
                 except ValueError:
                     logging.info("AP ungültige Position (%s - %s)" % item["main_ip"], pos)

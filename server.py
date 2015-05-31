@@ -15,7 +15,7 @@ def listAccesspoints():
         if bbox == "":
             #return all APs
             for ap in api.getAccesspoints():
-                feature = Feature(ap.main_ip, Point((ap.lat, ap.lon)), ap.__dict__)
+                feature = Feature(ap.main_ip, Point((ap.lat, ap.lon)), ap.properties)
                 features.append(feature) 
             collection = FeatureCollection(features)
             return geojson.dumps(collection)

@@ -6,6 +6,7 @@ class Accesspoint(object):
         self.main_ip=main_ip
         self.lat=lat
         self.lon=lon
+        self.properties={}
 
 class Link(object):
     '''
