@@ -1,3 +1,4 @@
+Shapely==1.5.9
 bottle==0.12.8
 coverage==3.7.1
 geojson==1.0.9
