@@ -148,7 +148,8 @@ function setupPopup(){
 				$(element).popover({
 					'placement': 'top',
 					'html': true,
-					'title': "<h1>"+feature.get('main_ip')+"</h1><small>"+feature.get('post_address')+"</small>",
+					'title': "<h1>"+feature.get('main_ip')+"</h1><small>"+feature.get('post_address')+"</small>"
+							+'<button type="button" id="close" class="close" onclick="">&times;</button>',
 					'content': getPopupContent(feature)
 				});
 				$(element).popover('show');
