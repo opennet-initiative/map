@@ -4,6 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
   <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
 	<title>Opennet Karte</title>
+	<link rel="icon" type="image/png" href="/static/headquarter.png" />
 	<link rel="stylesheet" href="/static/openlayers/ol.css" type="text/css">
 	<script src="/static/openlayers/ol.js" type="text/javascript"></script>
 	<script src="/static/jquery/jquery-2.1.4.min.js"></script>
