@@ -45,11 +45,17 @@ def listLinks():
             for link in api.getLinks():
                 geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
                 feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq})
-                features.append(feature) 
-            collection = FeatureCollection(features)
+                features.append(feature)
         else:
             #only links touching the bbox
-            pass
+            bbox = bbox.split(",")
+            bbox = geometry.geo.box(float(bbox[0]),float(bbox[1]),float(bbox[2]),float(bbox[3]))
+            for link in api.getLinks():
+                geom=geometry.LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
+                if bbox.contains(geom):
+                    feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq})
+                    features.append(feature)
+        collection = FeatureCollection(features)
         return geojson.dumps(collection)
 
 @route('/static/<filepath:path>')
