@@ -40,7 +40,7 @@ def listLinks():
     if apiformat == "json":
         response.content_type = 'text/json; charset=UTF8'
         features = []
-        if bbox is None:
+        if bbox == "":
             #return all links
             for link in api.getLinks():
                 geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
