@@ -1,15 +1,29 @@
 import logging
 import requests
+import threading
+import time
 from primitives import Accesspoint, Link
 
-class Api(object):
+class Api(threading.Thread):
     '''
     Client to access the main Opennet API (geronimo)
     '''
+    
+    API_INTERVALL=60
 
 
     def __init__(self):
-        pass
+        threading.Thread.__init__(self)
+        self.start()
+    
+    def run(self):
+        '''Update cache minloop'''
+        while(True):
+            logging.info("pulling ONI-API...")
+            self.updateAccesspoints()
+            self.updateLinks()
+            time.sleep(self.API_INTERVALL)
+        
     
     def __parsePoint(self, wkt):
         if wkt.find("POINT")>-1:
@@ -35,10 +49,12 @@ class Api(object):
             else: logging.info("AP ohne Position (%s)" % item["main_ip"])
         return ls
     
-    def getAccesspoints(self):
+    def updateAccesspoints(self):
         ''''returns all Accesspoints as objects'''
         r = requests.get("http://api.opennet-initiative.de/api/v1/accesspoint/?format=json")
         self.aps=self.__parseAccesspoint(r.json()) #TODO: Externalise
+    
+    def getAccesspoints(self):
         return self.aps
     
     def __parseLinks(self,json,aps):
@@ -63,12 +79,15 @@ class Api(object):
             dic[ap.main_ip]=ap
         return dic
     
-    def getLinks(self):
+    def updateLinks(self):
         ''''returns all links between Accesspoints as objects'''
         r = requests.get("http://api.opennet-initiative.de/api/v1/link/?format=json")
         if not hasattr(self,"aps"):
             self.getAccesspoints()
         apDict = self.__getAPasDict(self.aps)
-        return self.__parseLinks(r.json(),apDict)
+        self.links=self.__parseLinks(r.json(),apDict)
+    
+    def getLinks(self):
+        return self.links
         
         
