@@ -6,9 +6,9 @@
 	<title>Opennet Karte</title>
 	<link rel="stylesheet" href="/static/openlayers/ol.css" type="text/css">
 	<script src="/static/openlayers/ol.js" type="text/javascript"></script>
-	<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+	<script src="/static/jquery/jquery-2.1.4.min.js"></script>
+	<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
 	<script src="/static/layerswitcher/ol3-layerswitcher.js"></script>
 	<link rel="stylesheet" href="/static/layerswitcher/ol3-layerswitcher.css" />
 	<script type="text/javascript" src="/static/onimaps.js" charset="utf-8"></script>
