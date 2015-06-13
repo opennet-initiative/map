@@ -99,10 +99,38 @@ function createNodeStyle(){
 		image: new ol.style.Circle({
 				radius: 5,
 			  fill: new ol.style.Fill({color: 'grey', width: 2, opacity: 0.5}),
-			  stroke: new ol.style.Stroke({color: 'blacl', width: 1, opacity: 0.5})
+			  stroke: new ol.style.Stroke({color: 'black', width: 1, opacity: 0.5})
+			}),
+	  })];
+	  var flappingStyle = [new ol.style.Style({
+		image: new ol.style.Circle({
+				radius: 5,
+			  fill: new ol.style.Fill({color: 'red', width: 2, opacity: 0.8}),
+			  stroke: new ol.style.Stroke({color: 'red', width: 1, opacity: 0.5})
+			}),
+	  })];
+	  var ugwStyle = [new ol.style.Style({
+		image: new ol.style.Circle({
+				radius: 5,
+			  fill: new ol.style.Fill({color: '#1588eb', width: 2, opacity: 0.8}),
+			  stroke: new ol.style.Stroke({color: 'yellow', width: 3, opacity: 0.9})
+			}),
+	  })];
+	  var hotspotStyle = [new ol.style.Style({
+		image: new ol.style.Circle({
+				radius: 5,
+			  fill: new ol.style.Fill({color: '#1588eb', width: 2, opacity: 0.8}),
+			  stroke: new ol.style.Stroke({color: 'green', width: 30, opacity: 0.5})
 			}),
 	  })];
 	  return function(feature, resolution) {
+		  if (feature.get('opennet_wifidog_enabled')){
+			  return hotspotStyle;
+		  }
+		  if (feature.get('opennet_service_relay_enabled')){
+			  return ugwStyle;
+		  }
+		  hotspotStyle
 		if (feature.get('system_uptime') == null) {
 		  return offlineStyle;
 		} else {
