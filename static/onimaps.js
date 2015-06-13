@@ -72,7 +72,7 @@ function setupMap() {
 			url: '/api/accesspoints',
 			projection: 'EPSG:3857',
 			}),
-		style: createNodeStyle(),
+		style: (createNodeStyle())
 		}),
 		new ol.layer.Vector({
 		title: 'Links',
@@ -86,13 +86,29 @@ function setupMap() {
 }
 
 function createNodeStyle(){
-  return new ol.style.Style({
-				image: new ol.style.Circle({
-					radius: 5,
-				  fill: new ol.style.Fill({color: '#1588eb', width: 2, opacity: 0.8}),
-				  stroke: new ol.style.Stroke({color: '2004dd', width: 1, opacity: 0.8})
-				}),
-			});
+	//online|offline|flapping
+	//normal|UGW|Wifidog
+	var onlineStyle = [new ol.style.Style({
+		image: new ol.style.Circle({
+				radius: 5,
+			  fill: new ol.style.Fill({color: '#1588eb', width: 2, opacity: 0.8}),
+			  stroke: new ol.style.Stroke({color: '2004dd', width: 1, opacity: 0.8})
+			}),
+	  })];
+	  var offlineStyle = [new ol.style.Style({
+		image: new ol.style.Circle({
+				radius: 5,
+			  fill: new ol.style.Fill({color: 'grey', width: 2, opacity: 0.5}),
+			  stroke: new ol.style.Stroke({color: 'blacl', width: 1, opacity: 0.5})
+			}),
+	  })];
+	  return function(feature, resolution) {
+		if (feature.get('system_uptime') == null) {
+		  return offlineStyle;
+		} else {
+		  return onlineStyle;
+		}
+	  };
 }
 
 function getHeadquarter(){
