@@ -176,39 +176,46 @@ function setupPopup(){
 
 function getPopupContent(feature){
 	function toTimeString(totalNumberOfSeconds) {
-	 var days = parseInt( totalNumberOfSeconds / (3600*24) );
-	 var hours = parseInt( totalNumberOfSeconds / 3600 );
-	 var minutes = parseInt( (totalNumberOfSeconds - (hours * 3600)) / 60 );
-	 var seconds = Math.floor((totalNumberOfSeconds - ((hours * 3600) + (minutes * 60))));
-	 return (days < 10 ? "0" + days : days) + ":" + (hours < 10 ? "0" + hours : hours) + ":";
+		var d = new Date();
+		var t = d.getTime();
+		past = t-(totalNumberOfSeconds*1000);
+		return (new Date(past)).toLocaleFormat("%Y-%m-%d");
+	}
+	
+	function checkEmpty(val){
+		if ((val == undefined) || (val == NaN) || (val == null)){
+			return "?";
+		}
+		return val;
 	}
 	
 	ip=feature.get('main_ip');
 	gauge="<p><img width='247' height='137px' src='http://www.opennet-initiative.de/graph/ap.php?ap="+getApId(ip)+"&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=day'/></p>";
-	device=feature.get('device_model');
-	board=feature.get('device_board');
-	os_type = feature.get('firmware_type');
-	os_ver = feature.get('firmware_release_name');
-	load = feature.get('system_load_15min');
-	lastseen = feature.get('timestamp');
-	uptime = feature.get('system_uptime');
-	installtime = feature.get('firmware_install_timestamp');
-	operator = "Betreut von: <a>"+feature.get('owner')+"</a>"
+	device=checkEmpty(feature.get('device_model'));
+	board=checkEmpty(feature.get('device_board'));
+	os_type = checkEmpty(feature.get('firmware_type'));
+	os_ver = checkEmpty(feature.get('firmware_release_name'));
+	cpuload = checkEmpty(feature.get('system_load_15min'));
+	ramload = checkEmpty((feature.get('device_memory_available') / feature.get('device_memory_free')).toFixed(2));
+	lastseen = checkEmpty(feature.get('timestamp'));
+	uptime = checkEmpty(feature.get('system_uptime'));
+	installtime = checkEmpty(feature.get('firmware_install_timestamp'));
+	operator = checkEmpty(feature.get('owner'));
 	links = "<a href='"+getApId(ip)+"'>Wiki</a> ";
 	links = links +"<a href='"+ip+"'>Webinterface</a> ";
 	links = links +"<a href='"+ip+":8080'>OLSRd</a> ";
 	return gauge+
 			+"<p>"
-			+device+" <small>("+board+")</small><br>"
+			+device+"<br>"
 			+os_type+" <small>("+os_ver+")</small><br>"
-			+"CPU-Auslastung: "+load+ "<br>"
-			+ operator
-			+"</p>"+
-			+"<p>"+'<dl class="dl-horizontal">'
-			+"<dt>Zuletzt gesehen</dt><dd>"+lastseen+"</dd>"
-			+"<dt>Neustart am </dt><dd>"+toTimeString(parseFloat(uptime))+"</dd>"
-			+"<dt>Installation vom</dt><dd>"+installtime+"</dd>"
-			+'</dl>'+"</p>"
+			+"CPU: "+cpuload+ "<br>"
+			+"RAM: "+ramload+ "<br>"
+			+ "Betreut von: <a>"+operator+"</a>"
+			+"</p>"+"<p>"
+			+"Zuletzt gesehen: "+lastseen+"<br>"
+			+"Letzter Neustart: "+toTimeString(parseFloat(uptime))+"<br>"
+			+"Erstinstallation: "+installtime+"<br>"
+			+"</p>"
 			+"<br>"+links;
 	// ["opennet_version","opennet_wifidog_enabled"]
 	//UGW
