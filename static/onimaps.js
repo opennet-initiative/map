@@ -234,7 +234,14 @@ function getPopupContent(feature){
 	}
 	
 	ip=feature.get('main_ip');
-	gauge="<p><img width='247' height='137px' src='http://www.opennet-initiative.de/graph/ap.php?ap="+getApId(ip)+"&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=day'/></p>";
+	gauge="<p><img width='247' height='137px' src='http://www.opennet-initiative.de/graph/ap.php?ap="+getApId(ip)+"&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=day'/>";
+	gauge=gauge+
+		  '<div class="btn-group btn-group-xs" role="group" aria-label="...">\
+		  <button type="button" class="btn btn-default">24h</button> \
+		  <button type="button" class="btn btn-default">Woche</button> \
+		  <button type="button" class="btn btn-default">Monat</button> \
+		  <button type="button" class="btn btn-default">Jahr</button> \
+		</div></p>';
 	device=checkEmpty(feature.get('device_model'));
 	board=checkEmpty(feature.get('device_board'));
 	os_type = checkEmpty(feature.get('firmware_type'));
@@ -248,19 +255,17 @@ function getPopupContent(feature){
 	links = "<a href='"+getApId(ip)+"'>Wiki</a> ";
 	links = links +"<a href='"+ip+"'>Webinterface</a> ";
 	links = links +"<a href='"+ip+":8080'>OLSRd</a> ";
-	return gauge+
+	return gauge
 			+"<p>"
-			+device+"<br>"
-			+os_type+" <small>("+os_ver+")</small><br>"
-			+"CPU: "+cpuload+ "<br>"
-			+"RAM: "+ramload+ "<br>"
+			+device+" <small>("+os_type+", "+os_ver+")</small><br>"
+			+"CPU: "+cpuload+ " "+"RAM: "+ramload+ "<br>"
 			+ "Betreut von: <a>"+operator+"</a>"
 			+"</p>"+"<p>"
 			+"Zuletzt gesehen: "+lastseen+"<br>"
 			+"Letzter Neustart: "+toTimeString(parseFloat(uptime))+"<br>"
 			+"Erstinstallation: "+installtime+"<br>"
 			+"</p>"
-			+"<br>"+links;
+			+links;
 	// ["opennet_version","opennet_wifidog_enabled"]
 	//UGW
 }
