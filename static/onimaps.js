@@ -188,18 +188,36 @@ function setupPopup(){
 		  if(feature.get('main_ip')){
 				var geometry = feature.getGeometry();
 				var coord = geometry.getCoordinates();
+				var ip = feature.get('main_ip');
 				popup.setPosition(coord);
 				$(element).popover({
 					'placement': 'top',
+					'trigger': "focus",
 					'html': true,
-					'title': "<h1>"+feature.get('main_ip')+"</h1><small>"+feature.get('post_address')+"</small>"
-							+'<button type="button" id="close" class="close" onclick="">&times;</button>',
+					'title': "<h1>"+ip+'<button type="button" id="close" class="close btn-lg" onclick="">&times;</button>'+"</h1>"+ 
+							"<small>"+feature.get('post_address')+"</small>",
 					'content': getPopupContent(feature)
 				});
 				$(element).popover('show');
+				//enable gauge switch (here DOM is populated)
+				$('#buttonday').on('click', function (e) {
+					$("#gaugelq").attr("src", getGaugeImg(ip,"day"));
+				});
+				$('#buttonweek').on('click', function (e) {
+					$("#gaugelq").attr("src", getGaugeImg(ip, "week"));
+				});
+				$('#buttonmonth').on('click', function (e) {
+					$("#gaugelq").attr("src", getGaugeImg(ip, "month"));
+				});
+				$('#buttonyear').on('click', function (e) {
+					$("#gaugelq").attr("src", getGaugeImg(ip, "year"));
+				});
 			}
 		} else {
-			$(element).popover('destroy');
+			/*if(typeof $(e.target).data('title') == 'undefined') {
+				$(element).popover('destroy'); 
+		}*/
+			//$(element).popover('destroy');
 		}
 	});
 
@@ -234,13 +252,13 @@ function getPopupContent(feature){
 	}
 	
 	ip=feature.get('main_ip');
-	gauge="<p><img width='247' height='137px' src='http://www.opennet-initiative.de/graph/ap.php?ap="+getApId(ip)+"&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=day'/>";
+	gauge="<p><img id='gaugelq' width='247' height='137px' src='"+getGaugeImg(ip,"day")+"'/>";
 	gauge=gauge+
 		  '<div class="btn-group btn-group-xs" role="group" aria-label="...">\
-		  <button type="button" class="btn btn-default">24h</button> \
-		  <button type="button" class="btn btn-default">Woche</button> \
-		  <button type="button" class="btn btn-default">Monat</button> \
-		  <button type="button" class="btn btn-default">Jahr</button> \
+		  <button type="button" class="btn btn-default" id="buttonday">24h</button> \
+		  <button type="button" class="btn btn-default" id="buttonweek">Woche</button> \
+		  <button type="button" class="btn btn-default" id="buttonmonth">Monat</button> \
+		  <button type="button" class="btn btn-default" id="buttonyear">Jahr</button> \
 		</div></p>';
 	device=checkEmpty(feature.get('device_model'));
 	board=checkEmpty(feature.get('device_board'));
@@ -323,4 +341,8 @@ function setupGeolocation(){
 
 function getApId(ip){
 	return ip.replace("192.168.","");
+}
+
+function getGaugeImg(ip,rangeStr){
+	return "http://www.opennet-initiative.de/graph/ap.php?ap="+getApId(ip)+"&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range="+rangeStr
 }
