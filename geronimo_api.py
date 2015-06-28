@@ -29,14 +29,10 @@ class Api(threading.Thread):
             ap.properties[prop]=item[prop]
         
     
-    def __parsePoint(self, wkt):
-        if wkt.find("POINT")>-1:
-            src = wkt.replace("POINT (", "").replace(")", "")
-            lat = float(src.split(" ")[0])
-            lon = float(src.split(" ")[1])
+    def __parsePoint(self, coordinates):
+            lat = float(coordinates[0])
+            lon = float(coordinates[1])
             return lat, lon
-        else:
-            raise ValueError(wkt)
                
     def __parseAccesspoint(self,json):
         ls =[]
@@ -45,7 +41,7 @@ class Api(threading.Thread):
             pos=item["position"]
             if pos is not None:
                 try:
-                    lat, lon = self.__parsePoint(pos)
+                    lat, lon = self.__parsePoint(pos["coordinates"])
                     ap = Accesspoint(item["main_ip"], lat, lon)
                     self.__AddAccesspointProperties(ap,item,["main_ip","device_model","device_board","system_uptime","owner","system_load_15min","firmware_type","firmware_release_name","opennet_version","firmware_install_timestamp","opennet_wifidog_enabled","post_address"])
                     ls.append(ap)
