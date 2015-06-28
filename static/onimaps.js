@@ -256,7 +256,7 @@ function getPopupContent(feature){
 		var d = new Date();
 		var t = d.getTime();
 		past = t-(totalNumberOfSeconds*1000);
-		return (new Date(past)).toLocaleFormat("%Y-%m-%d");
+		return (new Date(past)).toLocaleDateString();
 	}
 	
 	function checkEmpty(val){
@@ -281,7 +281,7 @@ function getPopupContent(feature){
 	os_ver = checkEmpty(feature.get('firmware_release_name'));
 	cpuload = checkEmpty(feature.get('system_load_15min'));
 	ramload = checkEmpty((feature.get('device_memory_available') / feature.get('device_memory_free')).toFixed(2));
-	lastseen = checkEmpty(feature.get('timestamp'));
+	lastseen = checkEmpty(feature.get('lastseen_timestamp'));
 	uptime = checkEmpty(feature.get('system_uptime'));
 	installtime = checkEmpty(feature.get('firmware_install_timestamp'));
 	operator = checkEmpty(feature.get('owner'));
@@ -294,12 +294,12 @@ function getPopupContent(feature){
 			+"CPU: "+cpuload+ " "+"RAM: "+ramload+ "<br>"
 			+ "Betreut von: <a>"+operator+"</a>"
 			+"</p>"+"<p>"
-			+"Zuletzt gesehen: "+lastseen+"<br>"
+			+"Zuletzt gesehen: "+(new Date(lastseen)).toLocaleDateString()+"<br>"
 			+"Letzter Neustart: "+toTimeString(parseFloat(uptime))+"<br>"
-			+"Erstinstallation: "+installtime+"<br>"
+			+"Erstinstallation: "+(new Date(installtime)).toLocaleDateString()+"<br>"
 			+"</p>"
 			+links;
-	// ["opennet_version","opennet_wifidog_enabled"]
+	// ["opennet_version"]
 	//UGW
 }
 
