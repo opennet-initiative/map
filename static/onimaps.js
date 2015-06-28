@@ -175,13 +175,29 @@ function setupPermalinks(){
 
 function setupPopup(){
 	//Popup Setup
-	var element = document.getElementById('popup');
-	var popup = new ol.Overlay({
-	  element: element,
-	  positioning: 'bottom-center',
-	  stopEvent: false
-	});
-	map.addOverlay(popup);
+	/**
+	 * Add a click handler to hide the popup.
+	 * @return {boolean} Don't follow the href.
+	 */
+	 var closer = document.getElementById('popup-closer');
+	 var container = document.getElementById('popup');
+	var content = document.getElementById('popup-content');
+	closer.onclick = function() {
+	  popoverlay.setPosition(undefined);
+	  closer.blur();
+	  return false;
+	};
+	/**
+	 * Create an overlay to anchor the popup to the map.
+	 */
+	var popoverlay = new ol.Overlay(/** @type {olx.OverlayOptions} */ ({
+	  element: container,
+	  autoPan: true,
+	  autoPanAnimation: {
+		duration: 250
+	  }
+	}));
+	map.addOverlay(popoverlay);
 
 	map.on('singleclick', function(evt) {
 	  var coordinate = evt.coordinate;
@@ -194,16 +210,10 @@ function setupPopup(){
 				var geometry = feature.getGeometry();
 				var coord = geometry.getCoordinates();
 				var ip = feature.get('main_ip');
-				popup.setPosition(coord);
-				$(element).popover({
-					'placement': 'top',
-					'trigger': "focus",
-					'html': true,
-					'title': "<h1>"+ip+'<button type="button" id="close" class="close btn-lg" onclick="">&times;</button>'+"</h1>"+ 
-							"<small>"+feature.get('post_address')+"</small>",
-					'content': getPopupContent(feature)
-				});
-				$(element).popover('show');
+				content.innerHTML =getPopupContent(feature)
+				//'title': "<h1>"+ip+'<button type="button" id="close" class="close btn-lg" onclick="">&times;</button>'+"</h1>"+ 
+				//			"<small>"+feature.get('post_address')+"</small>",
+			  popoverlay.setPosition(coord);
 				//enable gauge switch (here DOM is populated)
 				$('#buttonday').on('click', function (e) {
 					$("#gaugelq").attr("src", getGaugeImg(ip,"day"));
