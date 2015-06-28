@@ -131,10 +131,15 @@ function createNodeStyle(){
 			  return ugwStyle;
 		  }
 		  hotspotStyle
-		if (feature.get('system_uptime') == null) {
+		if (feature.get('state') == "offline") {
 		  return offlineStyle;
 		} else {
-		  return onlineStyle;
+			if (feature.get('state') == "online"){
+				return onlineStyle;
+			}
+			else{
+				return flappingStyle;
+			}
 		}
 	  };
 }

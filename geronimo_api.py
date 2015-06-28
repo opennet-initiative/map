@@ -2,6 +2,8 @@ import logging
 import requests
 import threading
 import time
+import datetime
+import dateutil.parser
 from primitives import Accesspoint, Link
 
 class Api(threading.Thread):
@@ -10,6 +12,8 @@ class Api(threading.Thread):
     '''
     
     API_INTERVALL=60
+    MINUTES_FLAPPING=30
+    DAYS_OFFLINE=30
 
 
     def __init__(self):
@@ -25,8 +29,24 @@ class Api(threading.Thread):
             time.sleep(self.API_INTERVALL)
     
     def __AddAccesspointProperties(self,ap,item,properties):
+        '''copy properties fields'''
         for prop in properties:
             ap.properties[prop]=item[prop]
+    
+    def __setAccesspointOnlineStatus(self,ap):
+        '''detect if online|flapping|offline'''
+        try:
+            lastseen=dateutil.parser.parse(ap.properties["lastseen_timestamp"])
+            now=datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
+            diff=(now-lastseen).total_seconds()
+            state="online"
+            if diff>=60*self.MINUTES_FLAPPING:
+                state="flapping"
+            if diff>=60*30*24*self.DAYS_OFFLINE:
+                state="offline"
+        except AttributeError:
+            state="offline"
+        ap.properties["state"]=state
         
     
     def __parsePoint(self, coordinates):
@@ -43,7 +63,8 @@ class Api(threading.Thread):
                 try:
                     lat, lon = self.__parsePoint(pos["coordinates"])
                     ap = Accesspoint(item["main_ip"], lat, lon)
-                    self.__AddAccesspointProperties(ap,item,["main_ip","device_model","device_board","system_uptime","owner","system_load_15min","firmware_type","firmware_release_name","opennet_version","firmware_install_timestamp","opennet_captive_portal_enabled","post_address"])
+                    self.__AddAccesspointProperties(ap,item,["main_ip","device_model","device_board","system_uptime","lastseen_timestamp","owner","system_load_15min","firmware_type","firmware_release_name","opennet_version","firmware_install_timestamp","opennet_captive_portal_enabled","post_address"])
+                    self.__setAccesspointOnlineStatus(ap)
                     ls.append(ap)
                 except ValueError:
                     logging.info("AP ungültige Position (%s - %s)" % item["main_ip"], pos)
