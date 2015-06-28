@@ -63,7 +63,7 @@ class Api(threading.Thread):
                 try:
                     lat, lon = self.__parsePoint(pos["coordinates"])
                     ap = Accesspoint(item["main_ip"], lat, lon)
-                    self.__AddAccesspointProperties(ap,item,["main_ip","device_model","device_board","system_uptime","lastseen_timestamp","owner","system_load_15min","firmware_type","firmware_release_name","opennet_version","firmware_install_timestamp","opennet_captive_portal_enabled","post_address"])
+                    self.__AddAccesspointProperties(ap,item,["main_ip","device_model","device_board","system_uptime","lastseen_timestamp","owner","system_load_15min","device_memory_available","device_memory_free","firmware_type","firmware_release_name","opennet_version","firmware_install_timestamp","opennet_captive_portal_enabled","post_address"])
                     self.__setAccesspointOnlineStatus(ap)
                     ls.append(ap)
                 except ValueError:

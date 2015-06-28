@@ -280,7 +280,8 @@ function getPopupContent(feature){
 	os_type = checkEmpty(feature.get('firmware_type'));
 	os_ver = checkEmpty(feature.get('firmware_release_name'));
 	cpuload = checkEmpty(feature.get('system_load_15min'));
-	ramload = checkEmpty((feature.get('device_memory_available') / feature.get('device_memory_free')).toFixed(2));
+	ramload=parseFloat(feature.get('device_memory_free')) / parseFloat(feature.get('device_memory_available'))
+	ramload = checkEmpty(ramload).toFixed(2);
 	lastseen = checkEmpty(feature.get('lastseen_timestamp'));
 	uptime = checkEmpty(feature.get('system_uptime'));
 	installtime = checkEmpty(feature.get('firmware_install_timestamp'));
@@ -291,7 +292,7 @@ function getPopupContent(feature){
 	return gauge
 			+"<p>"
 			+device+" <small>("+os_type+", "+os_ver+")</small><br>"
-			+"CPU: "+cpuload+ " "+"RAM: "+ramload+ "<br>"
+			+"CPU: "+cpuload+ "% "+"RAM: "+ramload+ "%<br>"
 			+ "Betreut von: <a>"+operator+"</a>"
 			+"</p>"+"<p>"
 			+"Zuletzt gesehen: "+(new Date(lastseen)).toLocaleDateString()+"<br>"
