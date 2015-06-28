@@ -124,7 +124,7 @@ function createNodeStyle(){
 			}),
 	  })];
 	  return function(feature, resolution) {
-		  if (feature.get('opennet_wifidog_enabled')){
+		  if (feature.get('opennet_captive_portal_enabled')){
 			  return hotspotStyle;
 		  }
 		  if (feature.get('opennet_service_relay_enabled')){
