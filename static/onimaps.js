@@ -211,8 +211,8 @@ function setupPopup(){
 				var coord = geometry.getCoordinates();
 				var ip = feature.get('main_ip');
 				content.innerHTML =getPopupContent(feature)
-				//'title': "<h1>"+ip+'<button type="button" id="close" class="close btn-lg" onclick="">&times;</button>'+"</h1>"+ 
-				//			"<small>"+feature.get('post_address')+"</small>",
+				header = document.getElementById('popup-header');
+				header.innerHTML = "<h1>"+ip+"</h1>"+ "<small>"+feature.get('post_address')+"</small>",
 			  popoverlay.setPosition(coord);
 				//enable gauge switch (here DOM is populated)
 				$('#buttonday').on('click', function (e) {

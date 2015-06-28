@@ -51,6 +51,12 @@
 		  left: 48px;
 		  margin-left: -11px;
 		}
+		.ol-popup-header {
+		  text-decoration: none;
+		  position: absolute;
+		  top: 2px;
+		  left: 8px;
+		}
 		.ol-popup-closer {
 		  text-decoration: none;
 		  position: absolute;
@@ -86,6 +92,7 @@
 		<div id="map" class="map"></div>
 		<div id="popup" class="ol-popup">
 			<a href="#" id="popup-closer" class="ol-popup-closer"></a>
+			<div id="popup-header"></div>
 			<div id="popup-content"></div>
 		</div>
 		<script type="text/javascript">
