@@ -6,7 +6,8 @@ import logging
 import geronimo_api
 
 @route('/api/accesspoints')
-def listAccesspoints():
+@route('/api/accesspoints/<state>')
+def listAccesspoints(state="online"):
     apiformat = request.query.format or 'json'
     bbox = request.query.bbox
     if apiformat == "json":
@@ -15,7 +16,7 @@ def listAccesspoints():
         if bbox == "":
             #return all online APs
             for ap in api.getAccesspoints():
-                if ap.properties["state"]=="online":
+                if ap.properties["state"]==state:
                     feature = Feature(ap.main_ip, Point((ap.lat, ap.lon)), ap.properties)
                     features.append(feature) 
             collection = FeatureCollection(features)
@@ -27,7 +28,7 @@ def listAccesspoints():
             for ap in api.getAccesspoints():
                 p = geometry.Point((ap.lat, ap.lon))
                 if bbox.contains(p):
-                    if ap.properties["state"]=="online":
+                    if ap.properties["state"]==state:
                         feature = Feature(ap.main_ip, p, ap.__dict__)
                         features.append(feature)
             collection = FeatureCollection(features)

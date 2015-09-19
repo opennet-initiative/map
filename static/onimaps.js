@@ -67,12 +67,21 @@ function setupMap() {
     //ONI-Daten
 	overlayGroup.getLayers().extend([
 		new ol.layer.Vector({
-		title: 'Accesspoints',
+		title: 'Accesspoints online',
 		source: new ol.source.GeoJSON({
-			url: '/api/accesspoints',
+			url: '/api/accesspoints/online',
 			projection: 'EPSG:3857',
 			}),
 		style: (createNodeStyle())
+		}),
+		new ol.layer.Vector({
+		title: 'Accesspoints offline',
+		source: new ol.source.GeoJSON({
+			url: '/api/accesspoints/offline',
+			projection: 'EPSG:3857',
+			}),
+		style: (createNodeStyle()),
+		visible: false
 		}),
 		new ol.layer.Vector({
 		title: 'Links',
