@@ -299,9 +299,9 @@ function getPopupContent(feature){
 	uptime = checkEmpty(feature.get('system_uptime'));
 	installtime = checkEmpty(feature.get('firmware_install_timestamp'));
 	operator = checkEmpty(feature.get('owner'));
-	links = "<a href='"+getApId(ip)+"'>Wiki</a> ";
-	links = links +"<a href='"+ip+"'>Webinterface</a> ";
-	links = links +"<a href='"+ip+":8080'>OLSRd</a> ";
+	links = "<a href=http://wiki.opennet-initiative.de/wiki/'"+getApId(ip)+"'>Wiki</a> ";
+	links = links +"<a href='http://"+ip+"'>Webinterface</a> ";
+	links = links +"<a href='http://"+ip+":8080'>OLSRd</a> ";
 	return gauge
 			+"<p>"
 			+device+" <small>("+os_type+", "+os_ver+")</small><br>"
