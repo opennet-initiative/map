@@ -82,17 +82,19 @@ class Api(threading.Thread):
     def __parseLinks(self,json,aps):
         ls =[]
         for item in json:
-            ep1=item["endpoints"][0]
-            ep2=item["endpoints"][1]
-            ip1= ep1["interface"]["ip_address"]
-            ip2= ep2["interface"]["ip_address"]
-            lq = ep1["quality"]
-            rlq = ep1["quality"]
             try:
+                ep1=item["endpoints"][0]
+                ep2=item["endpoints"][1]
+                ip1= ep1["interface"]["ip_address"]
+                ip2= ep2["interface"]["ip_address"]
+                lq = ep1["quality"]
+                rlq = ep1["quality"]
                 link = Link(aps[ip1],aps[ip2],lq,rlq)
                 ls.append(link)
             except KeyError:
                 logging.info("Link zu unbekanntem AP (%s - %s)" % (ip1,ip2))
+            except IndexError:
+                logging.info("Link mit fehlenden APs " % item)
         return ls
     
     def __getAPasDict(self,apList):
