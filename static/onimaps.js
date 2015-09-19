@@ -83,6 +83,10 @@ function setupMap() {
 		}),
 		getHeadquarter()]
     );
+    //refresh strategies
+    window.setInterval(function() {
+	  //TODO: hier karte aktualisieren
+	}, 5000);
 }
 
 function createNodeStyle(){

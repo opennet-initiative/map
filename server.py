@@ -13,21 +13,23 @@ def listAccesspoints():
         response.content_type = 'text/json; charset=UTF8'
         features = []
         if bbox == "":
-            #return all APs
+            #return all online APs
             for ap in api.getAccesspoints():
-                feature = Feature(ap.main_ip, Point((ap.lat, ap.lon)), ap.properties)
-                features.append(feature) 
+                if ap.properties["state"]=="online":
+                    feature = Feature(ap.main_ip, Point((ap.lat, ap.lon)), ap.properties)
+                    features.append(feature) 
             collection = FeatureCollection(features)
             return geojson.dumps(collection)
         else:
-            #only APs within the bbox
+            #only online APs within the bbox
             bbox = bbox.split(",")
             bbox = geometry.geo.box(float(bbox[0]),float(bbox[1]),float(bbox[2]),float(bbox[3]))
             for ap in api.getAccesspoints():
                 p = geometry.Point((ap.lat, ap.lon))
                 if bbox.contains(p):
-                    feature = Feature(ap.main_ip, p, ap.__dict__)
-                    features.append(feature) 
+                    if ap.properties["state"]=="online":
+                        feature = Feature(ap.main_ip, p, ap.__dict__)
+                        features.append(feature)
             collection = FeatureCollection(features)
             return geojson.dumps(collection)
             
