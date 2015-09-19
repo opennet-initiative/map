@@ -68,27 +68,36 @@ function setupMap() {
 	overlayGroup.getLayers().extend([
 		new ol.layer.Vector({
 		title: 'Accesspoints online',
-		source: new ol.source.GeoJSON({
+		source: new ol.source.Vector({
 			url: '/api/accesspoints/online',
-			projection: 'EPSG:3857',
-			}),
+			format: new ol.format.GeoJSON({
+				//defaultDataProjection :'EPSG:4326', 
+				projection: 'EPSG:3857'
+			})
+		}),
 		style: (createNodeStyle())
 		}),
 		new ol.layer.Vector({
 		title: 'Accesspoints offline',
-		source: new ol.source.GeoJSON({
+		source: new ol.source.Vector({
 			url: '/api/accesspoints/offline',
-			projection: 'EPSG:3857',
-			}),
+			format: new ol.format.GeoJSON({
+				//defaultDataProjection :'EPSG:4326', 
+				projection: 'EPSG:3857'
+			})
+		}),
 		style: (createNodeStyle()),
 		visible: false
 		}),
 		new ol.layer.Vector({
 		title: 'Links',
-		source: new ol.source.GeoJSON({
+		source: new ol.source.Vector({
 			url: '/api/links',
-			projection: 'EPSG:3857',
-			}),
+			format: new ol.format.GeoJSON({
+				//defaultDataProjection :'EPSG:4326', 
+				projection: 'EPSG:3857'
+			})
+		}),
 		}),
 		getHeadquarter()]
     );
