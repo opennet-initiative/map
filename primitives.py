@@ -17,3 +17,11 @@ class Link(object):
         self.ap2 = ap2
         self.lq = lq
         self.rlq = rlq
+
+class Site(object):
+    '''
+    Standort
+    '''
+    def __init__(self,name,accesspoints=[]):
+        self.name
+        self.accesspoints=accesspoints

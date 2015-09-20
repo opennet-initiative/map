@@ -26,6 +26,7 @@ class Api(threading.Thread):
             logging.info("pulling ONI-API...")
             self.updateAccesspoints()
             self.updateLinks()
+            self.calculateSites()        
             time.sleep(self.API_INTERVALL)
     
     def __AddAccesspointProperties(self,ap,item,properties):
@@ -124,4 +125,26 @@ class Api(threading.Thread):
     def getLinks(self):
         return self.links
         
-        
+    def calculateSites(self):
+        '''calculates cluster of nodes with same building'''
+        aps=self.getAccesspoints()
+        sites={}
+        for ap in aps:
+            addr=ap.properties["post_address"]
+            try:
+                sites[addr]=sites[addr].append(ap.main_ip)
+            except KeyError:
+                sites[addr]=[ap.main_ip]
+        logging.info("found %d accesspoint sites" % (len(sites)))
+        apsdict=self.__getAPasDict(aps)
+        #detect cables between sites
+        university=["Ulmenstraße 69","August-Bebel-Str. 28","Albert Einsteinstraße 22"]
+        cablesites=[]
+        for site in sites:
+            if site.name in university:
+                cablesites.append(site)
+        for site in cablesites:
+                
+        #Kabel ausblenden (hardgecodete Liste)
+        #Backbones erkennen
+        #Links in Gebäuden uninteressant
