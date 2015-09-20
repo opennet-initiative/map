@@ -98,6 +98,12 @@ function setupMap() {
 				projection: 'EPSG:3857'
 			})
 		}),
+		style: new ol.style.Style({
+			stroke: new ol.style.Stroke({
+			  color: 'red',
+			  width: 10
+			})
+		  })
 		}),
 		getHeadquarter()]
     );
