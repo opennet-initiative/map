@@ -46,9 +46,10 @@ def listLinks():
         if bbox == "":
             #return all links
             for link in api.getLinks():
-                geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
-                feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq})
-                features.append(feature)
+                if link.state=="online":
+                    geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
+                    feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq})
+                    features.append(feature)
         else:
             #only links touching the bbox
             bbox = bbox.split(",")

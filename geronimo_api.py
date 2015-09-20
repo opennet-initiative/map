@@ -37,17 +37,20 @@ class Api(threading.Thread):
         '''detect if online|flapping|offline'''
         try:
             lastseen=dateutil.parser.parse(ap.properties["lastseen_timestamp"])
-            now=datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
-            diff=(now-lastseen).total_seconds()
-            state="online"
-            if diff>=60*self.MINUTES_FLAPPING:
-                state="flapping"
-            if diff>=60*30*24*self.DAYS_OFFLINE:
-                state="offline"
+            state=self.__calcOnlineStatus(lastseen)
         except AttributeError:
             state="offline"
         ap.properties["state"]=state
         
+    def __calcOnlineStatus(self,lastseen):
+        now=datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
+        diff=(now-lastseen).total_seconds()
+        state="online"
+        if diff>=60*self.MINUTES_FLAPPING:
+            state="flapping"
+        if diff>=60*30*24*self.DAYS_OFFLINE:
+            state="offline"
+        return state
     
     def __parsePoint(self, coordinates):
             lat = float(coordinates[0])
@@ -90,6 +93,13 @@ class Api(threading.Thread):
                 lq = ep1["quality"]
                 rlq = ep1["quality"]
                 link = Link(aps[ip1],aps[ip2],lq,rlq)
+                try:
+                    timestamp=item["timestamp"]
+                    lastseen=dateutil.parser.parse(timestamp)
+                    state=self.__calcOnlineStatus(lastseen)
+                except AttributeError:
+                    state="offline"
+                link.state=state
                 ls.append(link)
             except KeyError:
                 logging.info("Link zu unbekanntem AP (%s - %s)" % (ip1,ip2))
