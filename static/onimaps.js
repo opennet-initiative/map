@@ -68,27 +68,43 @@ function setupMap() {
 	overlayGroup.getLayers().extend([
 		new ol.layer.Vector({
 		title: 'Accesspoints online',
-		source: new ol.source.GeoJSON({
+		source: new ol.source.Vector({
 			url: '/api/accesspoints/online',
-			projection: 'EPSG:3857',
-			}),
+			format: new ol.format.GeoJSON({
+				//defaultDataProjection :'EPSG:4326', 
+				projection: 'EPSG:3857'
+			})
+		}),
 		style: (createNodeStyle())
 		}),
 		new ol.layer.Vector({
 		title: 'Accesspoints offline',
-		source: new ol.source.GeoJSON({
+		source: new ol.source.Vector({
 			url: '/api/accesspoints/offline',
-			projection: 'EPSG:3857',
-			}),
+			format: new ol.format.GeoJSON({
+				//defaultDataProjection :'EPSG:4326', 
+				projection: 'EPSG:3857'
+			})
+		}),
 		style: (createNodeStyle()),
 		visible: false
 		}),
 		new ol.layer.Vector({
-		title: 'Links',
-		source: new ol.source.GeoJSON({
-			url: '/api/links',
-			projection: 'EPSG:3857',
+			title: 'Links',
+			source: new ol.source.Vector({
+				url: '/api/links',
+				format: new ol.format.GeoJSON({
+					//defaultDataProjection :'EPSG:4326', 
+					projection: 'EPSG:3857'
+				})
 			}),
+			style: [new ol.style.Style({
+				stroke: new ol.style.Stroke({
+				  color: '#1588eb',
+				  width: 1
+				})
+			  })],
+			  visible:true
 		}),
 		getHeadquarter()]
     );
@@ -143,7 +159,6 @@ function createNodeStyle(){
 		  if (feature.get('opennet_service_relay_enabled')){
 			  return ugwStyle;
 		  }
-		  hotspotStyle
 		if (feature.get('state') == "offline") {
 		  return offlineStyle;
 		} else {
