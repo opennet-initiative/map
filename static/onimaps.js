@@ -90,20 +90,21 @@ function setupMap() {
 		visible: false
 		}),
 		new ol.layer.Vector({
-		title: 'Links',
-		source: new ol.source.Vector({
-			url: '/api/links',
-			format: new ol.format.GeoJSON({
-				//defaultDataProjection :'EPSG:4326', 
-				projection: 'EPSG:3857'
-			})
-		}),
-		style: new ol.style.Style({
-			stroke: new ol.style.Stroke({
-			  color: 'red',
-			  width: 10
-			})
-		  })
+			title: 'Links',
+			source: new ol.source.Vector({
+				url: '/api/links',
+				format: new ol.format.GeoJSON({
+					//defaultDataProjection :'EPSG:4326', 
+					projection: 'EPSG:3857'
+				})
+			}),
+			style: [new ol.style.Style({
+				stroke: new ol.style.Stroke({
+				  color: '#1588eb',
+				  width: 1
+				})
+			  })],
+			  visible:true
 		}),
 		getHeadquarter()]
     );
@@ -158,7 +159,6 @@ function createNodeStyle(){
 		  if (feature.get('opennet_service_relay_enabled')){
 			  return ugwStyle;
 		  }
-		  hotspotStyle
 		if (feature.get('state') == "offline") {
 		  return offlineStyle;
 		} else {

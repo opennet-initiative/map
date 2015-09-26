@@ -47,7 +47,7 @@ def listLinks():
             #return all links
             for link in api.getLinks():
                 geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
-                feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq})
+                feature = Feature(link.ap1.main_ip+"-"+link.ap2.main_ip, geom, {"lq":link.lq,"rlq":link.rlq})
                 features.append(feature)
         else:
             #only links touching the bbox

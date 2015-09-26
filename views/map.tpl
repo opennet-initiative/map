@@ -6,7 +6,7 @@
 	<title>Opennet Karte</title>
 	<link rel="icon" type="image/png" href="/static/headquarter.png" />
 	<link rel="stylesheet" href="/static/openlayers/ol.css" type="text/css">
-	<script src="/static/openlayers/ol.js" type="text/javascript"></script>
+	<script src="/static/openlayers/ol-debug.js" type="text/javascript"></script>
 	<script src="/static/jquery/jquery-2.1.4.min.js"></script>
 	<script src="/static/bootstrap/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
