@@ -126,7 +126,7 @@ class Api(threading.Thread):
         return self.links
         
     def calculateSites(self):
-        '''calculates cluster of nodes with same building'''
+        '''calculates cluster of nodes within same building'''
         aps=self.getAccesspoints()
         sites={}
         for ap in aps:
@@ -143,7 +143,16 @@ class Api(threading.Thread):
         for site in sites:
             if site.name in university:
                 cablesites.append(site)
-        for site in cablesites:
+        #TODO: allg. sites ausgeben
+        for link in self.links:
+            loc1=link.ap1.properties["post_address"]
+            loc2=link.ap2.properties["post_address"]
+            if (loc1 in university) and (loc2 in university):
+                if loc1 != loc2:
+                    #found cable
+                
+        #links durchgehen
+        # - beide Enden in Universität?
                 
         #Kabel ausblenden (hardgecodete Liste)
         #Backbones erkennen
