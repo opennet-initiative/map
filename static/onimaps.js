@@ -308,13 +308,13 @@ function getPopupContent(feature){
 	os_type = checkEmpty(feature.get('firmware_type'));
 	os_ver = checkEmpty(feature.get('firmware_release_name'));
 	cpuload = checkEmpty(feature.get('system_load_15min'));
-	ramload=parseFloat(feature.get('device_memory_free')) / parseFloat(feature.get('device_memory_available'))
+	ramload=parseFloat(feature.get('device_memory_free')) / prseFloat(feature.get('device_memory_available'))
 	ramload = checkEmpty(ramload).toFixed(2);
 	lastseen = checkEmpty(feature.get('lastseen_timestamp'));
 	uptime = checkEmpty(feature.get('system_uptime'));
 	installtime = checkEmpty(feature.get('firmware_install_timestamp'));
 	operator = checkEmpty(feature.get('owner'));
-	links = "<a href=http://wiki.opennet-initiative.de/wiki/'"+getApId(ip)+"'>Wiki</a> ";
+	links = "<a href=http://wiki.opennet-initiative.de/wiki/"+getApId(ip)+">Wiki</a> ";
 	links = links +"<a href='http://"+ip+"'>Webinterface</a> ";
 	links = links +"<a href='http://"+ip+":8080'>OLSRd</a> ";
 	return gauge
