@@ -132,24 +132,31 @@ class Api(threading.Thread):
         for ap in aps:
             addr=ap.properties["post_address"]
             try:
-                sites[addr]=sites[addr].append(ap.main_ip)
+                sites[addr].append(ap.main_ip)
             except KeyError:
                 sites[addr]=[ap.main_ip]
+        self.sites=sites
         logging.info("found %d accesspoint sites" % (len(sites)))
         apsdict=self.__getAPasDict(aps)
         #detect cables between sites
+        #TODO: allg. sites ausgeben und als primitiver Datentyp
         university=["Ulmenstraße 69","August-Bebel-Str. 28","Albert Einsteinstraße 22"]
         cablesites=[]
-        for site in sites:
-            if site.name in university:
+        for site in sites.keys():
+            if site in university:
                 cablesites.append(site)
-        #TODO: allg. sites ausgeben
         for link in self.links:
+            link.cable = False
             loc1=link.ap1.properties["post_address"]
             loc2=link.ap2.properties["post_address"]
             if (loc1 in university) and (loc2 in university):
                 if loc1 != loc2:
-                    #found cable
+                    link.cable = True
+        #calculate centeroid
+        
+    def getSite(self):
+        return self.sites
+                    
                 
         #links durchgehen
         # - beide Enden in Universität?

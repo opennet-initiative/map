@@ -89,9 +89,7 @@ function setupMap() {
 			url: '/api/links',
 			projection: 'EPSG:3857',
 			}),
-		style: new ol.style.Style({
-			stroke: new ol.style.Stroke({color: '#1588eb', width: 2, opacity: 0.8}),
-		  }), 
+		style: createLinkStyle(), 
 		}),
 		getHeadquarter()]
     );
@@ -158,6 +156,23 @@ function createNodeStyle(){
 			}
 		}
 	  };
+}
+
+function createLinkStyle(){
+	var airStyle = new ol.style.Style({
+			stroke: new ol.style.Stroke({color: '#1588eb', width: 2, opacity: 0.8}),
+		  });
+	var cableStyle = new ol.style.Style({
+			stroke: new ol.style.Stroke({color: '#1588eb', width: 1, opacity: 0.05, lineDash: [4,4]}),
+		  });
+	return function(feature, resolution) {
+		  if (feature.get('cable')){
+			  return [cableStyle];
+		  }
+		  else{
+			  return [airStyle];
+		  }
+	  }
 }
 
 function getHeadquarter(){

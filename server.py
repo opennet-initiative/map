@@ -48,7 +48,7 @@ def listLinks():
             for link in api.getLinks():
                 if link.state=="online":
                     geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
-                    feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq})
+                    feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq,"cable":link.cable})
                     features.append(feature)
         else:
             #only links touching the bbox
@@ -57,8 +57,21 @@ def listLinks():
             for link in api.getLinks():
                 geom=geometry.LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
                 if bbox.contains(geom):
-                    feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq})
+                    feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq,"cable":link.cable})
                     features.append(feature)
+        collection = FeatureCollection(features)
+        return geojson.dumps(collection)
+
+@route('/api/sites')
+def listSites():
+    apiformat = request.query.format or 'json'
+    if apiformat == "json":
+        response.content_type = 'text/json; charset=UTF8'
+        features = []
+        for site in api.sites:
+            geom=Point(0,0)
+            feature = Feature(site,geom)
+            features.append(feature)
         collection = FeatureCollection(features)
         return geojson.dumps(collection)
 
