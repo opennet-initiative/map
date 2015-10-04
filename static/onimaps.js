@@ -89,6 +89,9 @@ function setupMap() {
 			url: '/api/links',
 			projection: 'EPSG:3857',
 			}),
+		style: new ol.style.Style({
+			stroke: new ol.style.Stroke({color: '#1588eb', width: 2, opacity: 0.8}),
+		  }), 
 		}),
 		getHeadquarter()]
     );
