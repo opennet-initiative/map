@@ -319,7 +319,8 @@ function getPopupContent(feature){
 	links = links +"<a href='http://"+ip+":8080'>OLSRd</a> ";
 	return gauge
 			+"<p>"
-			+device+" <small>("+os_type+", "+os_ver+")</small><br>"
+			+device+"<br>"
+			+" <small>("+os_type+", "+os_ver+")</small><br>"
 			+"CPU: "+cpuload+ "% "+"RAM: "+ramload+ "%<br>"
 			+ "Betreut von: <a>"+operator+"</a>"
 			+"</p>"+"<p>"
