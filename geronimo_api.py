@@ -17,11 +17,12 @@ class Api(threading.Thread):
 
 
     def __init__(self):
+        logging.info("init API")
         threading.Thread.__init__(self)
         self.start()
     
     def run(self):
-        '''Update cache minloop'''
+        '''Update cache mainloop'''
         while(True):
             logging.info("pulling ONI-API...")
             self.updateAccesspoints()

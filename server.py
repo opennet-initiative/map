@@ -71,7 +71,7 @@ def hello():
     return template('map')
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='server.log', format=logging.BASIC_FORMAT)
+    logging.basicConfig(filename='server.log', level=logging.DEBUG)
     logging.info("karten server gestartet")
     api=geronimo_api.Api()
     run(host='localhost', port=8081, debug=True)
