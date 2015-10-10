@@ -71,8 +71,8 @@ class Api(threading.Thread):
                     self.__setAccesspointOnlineStatus(ap)
                     ls.append(ap)
                 except ValueError:
-                    logging.info("AP ungültige Position (%s - %s)" % item["main_ip"], pos)
-            else: logging.info("AP ohne Position (%s)" % item["main_ip"])
+                    logging.warning("AP ungültige Position (%s - %s)" % item["main_ip"], pos)
+            else: logging.warning("AP ohne Position (%s)" % item["main_ip"])
         return ls
     
     def updateAccesspoints(self):
@@ -103,9 +103,9 @@ class Api(threading.Thread):
                 link.state=state
                 ls.append(link)
             except KeyError:
-                logging.info("Link zu unbekanntem AP (%s - %s)" % (ip1,ip2))
+                logging.warning("Link zu unbekanntem AP (%s - %s)" % (ip1,ip2))
             except IndexError:
-                logging.info("Link mit fehlenden APs " % item)
+                logging.warning("Link mit fehlenden APs " % item)
         return ls
     
     def __getAPasDict(self,apList):
