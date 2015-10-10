@@ -308,7 +308,7 @@ function getPopupContent(feature){
 	os_type = checkEmpty(feature.get('firmware_type'));
 	os_ver = checkEmpty(feature.get('firmware_release_name'));
 	cpuload = checkEmpty(feature.get('system_load_15min'));
-	ramload=parseFloat(feature.get('device_memory_free')) / prseFloat(feature.get('device_memory_available'))
+	ramload=parseFloat(feature.get('device_memory_free')) / parseFloat(feature.get('device_memory_available'))
 	ramload = checkEmpty(ramload).toFixed(2);
 	lastseen = checkEmpty(feature.get('lastseen_timestamp'));
 	uptime = checkEmpty(feature.get('system_uptime'));
