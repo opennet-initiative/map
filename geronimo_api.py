@@ -141,6 +141,7 @@ class Api(threading.Thread):
         #detect cables between sites
         #TODO: allg. sites ausgeben und als primitiver Datentyp
         university=["Ulmenstraße 69","August-Bebel-Str. 28","Albert Einsteinstraße 22"]
+        government=[""]
         cablesites=[]
         for site in sites.keys():
             if site in university:
@@ -150,6 +151,9 @@ class Api(threading.Thread):
             loc1=link.ap1.properties["post_address"]
             loc2=link.ap2.properties["post_address"]
             if (loc1 in university) and (loc2 in university):
+                if loc1 != loc2:
+                    link.cable = True
+            if (loc1 in government) and (loc2 in government):
                 if loc1 != loc2:
                     link.cable = True
         #calculate centeroid
