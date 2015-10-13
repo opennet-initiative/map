@@ -48,7 +48,7 @@ def listLinks():
             for link in api.getLinks():
                 if link.state=="online":
                     geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
-                    feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq,"cable":link.cable})
+                    feature = Feature(link.ap1.main_ip+"-"+link.ap2.main_ip, geom, {"lq":link.lq,"rlq":link.rlq,"cable":link.cable})
                     features.append(feature)
         else:
             #only links touching the bbox
@@ -57,7 +57,7 @@ def listLinks():
             for link in api.getLinks():
                 geom=geometry.LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
                 if bbox.contains(geom):
-                    feature = Feature('link', geom, {"lq":link.lq,"rlq":link.rlq,"cable":link.cable})
+                    feature = Feature(link.ap1.main_ip+"-"+link.ap2.main_ip, geom, {"lq":link.lq,"rlq":link.rlq,"cable":link.cable})
                     features.append(feature)
         collection = FeatureCollection(features)
         return geojson.dumps(collection)
@@ -84,7 +84,7 @@ def hello():
     return template('map')
 
 if __name__ == '__main__':
-    logging.basicConfig(filename='server.log', format=logging.BASIC_FORMAT)
+    logging.basicConfig(filename='server.log', level=logging.DEBUG, format = '%(levelname)s %(asctime)-15s - %(message)s')
     logging.info("karten server gestartet")
     api=geronimo_api.Api()
     run(host='localhost', port=8081, debug=True)

@@ -68,26 +68,35 @@ function setupMap() {
 	overlayGroup.getLayers().extend([
 		new ol.layer.Vector({
 		title: 'Accesspoints online',
-		source: new ol.source.GeoJSON({
+		source: new ol.source.Vector({
 			url: '/api/accesspoints/online',
-			projection: 'EPSG:3857',
-			}),
+			format: new ol.format.GeoJSON({
+				//defaultDataProjection :'EPSG:4326', 
+				projection: 'EPSG:3857'
+			})
+		}),
 		style: (createNodeStyle())
 		}),
 		new ol.layer.Vector({
 		title: 'Accesspoints offline',
-		source: new ol.source.GeoJSON({
+		source: new ol.source.Vector({
 			url: '/api/accesspoints/offline',
-			projection: 'EPSG:3857',
-			}),
+			format: new ol.format.GeoJSON({
+				//defaultDataProjection :'EPSG:4326', 
+				projection: 'EPSG:3857'
+			})
+		}),
 		style: (createNodeStyle()),
 		visible: false
 		}),
 		new ol.layer.Vector({
-		title: 'Links',
-		source: new ol.source.GeoJSON({
-			url: '/api/links',
-			projection: 'EPSG:3857',
+			title: 'Links',
+			source: new ol.source.Vector({
+				url: '/api/links',
+				format: new ol.format.GeoJSON({
+					//defaultDataProjection :'EPSG:4326', 
+					projection: 'EPSG:3857'
+				})
 			}),
 		style: createLinkStyle(), 
 		}),
@@ -144,7 +153,6 @@ function createNodeStyle(){
 		  if (feature.get('opennet_service_relay_enabled')){
 			  return ugwStyle;
 		  }
-		  hotspotStyle
 		if (feature.get('state') == "offline") {
 		  return offlineStyle;
 		} else {
@@ -317,12 +325,13 @@ function getPopupContent(feature){
 	uptime = checkEmpty(feature.get('system_uptime'));
 	installtime = checkEmpty(feature.get('firmware_install_timestamp'));
 	operator = checkEmpty(feature.get('owner'));
-	links = "<a href=http://wiki.opennet-initiative.de/wiki/'"+getApId(ip)+"'>Wiki</a> ";
+	links = "<a href=http://wiki.opennet-initiative.de/wiki/AP"+getApId(ip)+">Wiki</a> ";
 	links = links +"<a href='http://"+ip+"'>Webinterface</a> ";
 	links = links +"<a href='http://"+ip+":8080'>OLSRd</a> ";
 	return gauge
 			+"<p>"
-			+device+" <small>("+os_type+", "+os_ver+")</small><br>"
+			+device+"<br>"
+			+" <small>("+os_type+", "+os_ver+")</small><br>"
 			+"CPU: "+cpuload+ "% "+"RAM: "+ramload+ "%<br>"
 			+ "Betreut von: <a>"+operator+"</a>"
 			+"</p>"+"<p>"
