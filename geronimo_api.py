@@ -141,7 +141,7 @@ class Api(threading.Thread):
         apsdict=self.__getAPasDict(aps)
         #detect cables between sites
         #TODO: allg. sites ausgeben und als primitiver Datentyp
-        university=["Ulmenstraße 69","August-Bebel-Str. 28","Albert Einsteinstraße 22"]
+        university=["Ulmenstraße 69","August-Bebel-Straße 28","Albert Einsteinstraße 22"]
         government=["HWBR","Bauamt"]
         cablesites=[]
         for site in sites.keys():
