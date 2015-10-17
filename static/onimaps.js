@@ -299,7 +299,14 @@ function getPopupContent(feature){
 	}
 	
 	function checkEmpty(val){
-		if ((val == undefined) || (val == NaN) || (val == null)){
+		if ((val == undefined) || (val == null)){
+			return "?";
+		}
+		return val;
+	}
+	
+	function checkEmptyNum(val){
+		if ((val == undefined) || isNaN(val) || (val == null)){
 			return "?";
 		}
 		return val;
@@ -318,9 +325,9 @@ function getPopupContent(feature){
 	board=checkEmpty(feature.get('device_board'));
 	os_type = checkEmpty(feature.get('firmware_type'));
 	os_ver = checkEmpty(feature.get('firmware_release_name'));
-	cpuload = checkEmpty(feature.get('system_load_15min'));
-	ramload=parseFloat(feature.get('device_memory_free')) / parseFloat(feature.get('device_memory_available'))
-	ramload = checkEmpty(ramload).toFixed(2);
+	cpuload = checkEmptyNum(100.0 * parseFloat(feature.get('system_load_15min'))).toFixed(2);
+	romload=100.0 - parseFloat(feature.get('device_memory_free')) / parseFloat(feature.get('device_memory_available'))
+	romload = checkEmptyNum(romload.toFixed(2));
 	lastseen = checkEmpty(feature.get('lastseen_timestamp'));
 	uptime = checkEmpty(feature.get('system_uptime'));
 	installtime = checkEmpty(feature.get('firmware_install_timestamp'));
@@ -332,7 +339,7 @@ function getPopupContent(feature){
 			+"<p>"
 			+device+"<br>"
 			+" <small>("+os_type+", "+os_ver+")</small><br>"
-			+"CPU: "+cpuload+ "% "+"RAM: "+ramload+ "%<br>"
+			+"CPU: "+cpuload+ "% "+"ROM: "+romload+ "%<br>"
 			+ "Betreut von: <a>"+operator+"</a>"
 			+"</p>"+"<p>"
 			+"Zuletzt gesehen: "+(new Date(lastseen)).toLocaleDateString()+"<br>"
