@@ -79,7 +79,8 @@ class Api(threading.Thread):
     def updateAccesspoints(self):
         ''''returns all Accesspoints as objects'''
         r = requests.get("http://api.opennet-initiative.de/api/v1/accesspoint/?format=json")
-        self.aps=self.__parseAccesspoint(r.json()) #TODO: Externalise
+        if r.status_code == requests.codes.ok:
+            self.aps=self.__parseAccesspoint(r.json()) #TODO: Externalise
     
     def getAccesspoints(self):
         return self.aps
@@ -118,10 +119,11 @@ class Api(threading.Thread):
     def updateLinks(self):
         ''''returns all links between Accesspoints as objects'''
         r = requests.get("http://api.opennet-initiative.de/api/v1/link/?format=json")
-        if not hasattr(self,"aps"):
-            self.getAccesspoints()
-        apDict = self.__getAPasDict(self.aps)
-        self.links=self.__parseLinks(r.json(),apDict)
+        if r.status_code == requests.codes.ok:
+            if not hasattr(self,"aps"):
+                self.getAccesspoints()
+            apDict = self.__getAPasDict(self.aps)
+            self.links=self.__parseLinks(r.json(),apDict)
     
     def getLinks(self):
         return self.links
