@@ -1,3 +1,5 @@
+from __future__ import division
+
 class Accesspoint(object):
     '''
     Minimale AP Informationen
@@ -12,8 +14,15 @@ class Link(object):
     '''
     Minimale Link Informationen
     '''
-    def __init__(self,ap1,ap2,lq,rlq):
+    def __init__(self,ap1,ap2,lq,nlq):
         self.ap1 = ap1
         self.ap2 = ap2
         self.lq = lq
-        self.rlq = rlq
+        self.nlq = nlq
+        self.etx = self.__getEtx(lq,nlq)
+    
+    def __getEtx(self,lq,nlq):
+        try:
+            return (1.0 / (float(lq) * float(nlq)))           
+        except ZeroDivisionError:
+            return 0.0

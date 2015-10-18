@@ -167,17 +167,32 @@ function createNodeStyle(){
 }
 
 function createLinkStyle(){
-	var airStyle = new ol.style.Style({
-			stroke: new ol.style.Stroke({color: '#1588eb', width: 2}),
-		  });
-	var cableStyle = new ol.style.Style({
+	return function(feature, resolution) {
+		var cableStyle = new ol.style.Style({
 			stroke: new ol.style.Stroke({color: 'rgba(21,136,235,0.2)', width: 1, lineDash: [1,4]}),
 		  });
-	return function(feature, resolution) {
 		  if (feature.get('cable')){
 			  return [cableStyle];
 		  }
 		  else{
+			  etx=feature.get('etx');
+			  if (etx){
+				  if (etx>1.0) {
+					  if (etx >=3.0){
+						  aircolor='red'; 
+					  }
+					  if (etx >=1.5){
+						  aircolor='green'; 
+					  }
+					  if (etx >=1.1){
+						  aircolor='aqua'; 
+					  }
+				  }
+				  else aircolor = '#1588eb';
+			  }
+			  var airStyle = new ol.style.Style({
+				stroke: new ol.style.Stroke({color: aircolor, width: 2}),
+			  });
 			  return [airStyle];
 		  }
 	  }

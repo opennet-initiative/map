@@ -94,8 +94,8 @@ class Api(threading.Thread):
                 ip1= ep1["interface"]["ip_address"]
                 ip2= ep2["interface"]["ip_address"]
                 lq = ep1["quality"]
-                rlq = ep1["quality"]
-                link = Link(aps[ip1],aps[ip2],lq,rlq)
+                nlq = ep1["quality"]
+                link = Link(aps[ip1],aps[ip2],lq,nlq)
                 try:
                     timestamp=item["timestamp"]
                     lastseen=dateutil.parser.parse(timestamp)
