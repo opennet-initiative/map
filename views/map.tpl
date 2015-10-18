@@ -102,7 +102,6 @@
 			setupPermalinks();
 			setupPopup();
 			setupTooltip();
-			setupGeolocation();
 		</script>
 	</body>
 </html>

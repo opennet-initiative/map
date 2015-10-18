@@ -89,6 +89,17 @@ function setupMap() {
 		style: (createNodeStyle())
 		}),
 		new ol.layer.Vector({
+		title: 'Accesspoints instabil',
+		source: new ol.source.Vector({
+			url: '/api/accesspoints/flapping',
+			format: new ol.format.GeoJSON({
+				//defaultDataProjection :'EPSG:4326', 
+				projection: 'EPSG:3857'
+			})
+		}),
+		style: (createNodeStyle())
+		}),
+		new ol.layer.Vector({
 		title: 'Accesspoints offline',
 		source: new ol.source.Vector({
 			url: '/api/accesspoints/offline',
