@@ -168,10 +168,10 @@ function createNodeStyle(){
 
 function createLinkStyle(){
 	var airStyle = new ol.style.Style({
-			stroke: new ol.style.Stroke({color: '#1588eb', width: 2, opacity: 0.8}),
+			stroke: new ol.style.Stroke({color: '#1588eb', width: 2}),
 		  });
 	var cableStyle = new ol.style.Style({
-			stroke: new ol.style.Stroke({color: '#1588eb', width: 1, opacity: 0.05, lineDash: [4,4]}),
+			stroke: new ol.style.Stroke({color: 'rgba(21,136,235,0.2)', width: 1, lineDash: [1,4]}),
 		  });
 	return function(feature, resolution) {
 		  if (feature.get('cable')){
