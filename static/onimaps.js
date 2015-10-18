@@ -67,6 +67,17 @@ function setupMap() {
     //ONI-Daten
 	overlayGroup.getLayers().extend([
 		new ol.layer.Vector({
+			title: 'Links',
+			source: new ol.source.Vector({
+				url: '/api/links',
+				format: new ol.format.GeoJSON({
+					//defaultDataProjection :'EPSG:4326', 
+					projection: 'EPSG:3857'
+				})
+			}),
+		style: createLinkStyle(), 
+		}),
+		new ol.layer.Vector({
 		title: 'Accesspoints online',
 		source: new ol.source.Vector({
 			url: '/api/accesspoints/online',
@@ -88,17 +99,6 @@ function setupMap() {
 		}),
 		style: (createNodeStyle()),
 		visible: false
-		}),
-		new ol.layer.Vector({
-			title: 'Links',
-			source: new ol.source.Vector({
-				url: '/api/links',
-				format: new ol.format.GeoJSON({
-					//defaultDataProjection :'EPSG:4326', 
-					projection: 'EPSG:3857'
-				})
-			}),
-		style: createLinkStyle(), 
 		}),
 		getHeadquarter()]
     );
