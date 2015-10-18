@@ -89,11 +89,13 @@
 	</style>
 </head>
 	<body style="background-color: #B5D0D0">
-		<div id="map" class="map"></div>
-		<div id="popup" class="ol-popup">
-			<a href="#" id="popup-closer" class="ol-popup-closer"></a>
-			<div id="popup-header"></div>
-			<div id="popup-content"></div>
+		<div id="map" class="map">
+			<div id="popup" class="ol-popup">
+				<a href="#" id="popup-closer" class="ol-popup-closer"></a>
+				<div id="popup-header"></div>
+				<div id="popup-content"></div>
+			</div>
+			<div id="info"></div>
 		</div>
 		<script type="text/javascript">
 			setupMap();

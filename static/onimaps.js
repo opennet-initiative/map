@@ -369,51 +369,37 @@ function getPopupContent(feature){
 function setupTooltip(){
 	//Tooltip Setup	
 	var info = $('#info');
-	info.tooltip({
-	  animation: false,
-	  trigger: 'manual'
-	});
+info.tooltip({
+    animation: false,
+    trigger: 'manual'
+});
 
-	var displayFeatureInfo = function(pixel) {
-	  info.css({
-		left: pixel[0] + 'px',
-		top: (pixel[1] - 15) + 'px'
-	  });
-	  var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-		return feature;
-	  });
-	  if (feature) {
-		  if(feature.get('main_ip')){
+var displayFeatureInfo = function(pixel) {
+    info.css({
+        left: pixel[0] + 'px',
+        top: (pixel[1] - 3) + 'px'
+    });
+    var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+        return feature;
+    });
+    if (feature) {
+		if (feature.get('main_ip')){
 			info.tooltip('hide')
 				.attr('data-original-title', getApId(feature.get('main_ip')))
 				.tooltip('fixTitle')
 				.tooltip('show');
-		}
-	  } else {
-		info.tooltip('hide');
-	  }
+         }
+    } else {
+        info.tooltip('hide');
+    }
 	};
 
 	map.on('pointermove', function(evt) {
-	  if (evt.dragging) {
-		info.tooltip('hide');
-		return;
-	  }
-	  displayFeatureInfo(map.getEventPixel(evt.originalEvent));
-	});
-}
-
-function setupGeolocation(){
-	//Geolocation Setup
-	var geolocation = new ol.Geolocation({
-		projection: 'EPSG:3857',
-		tracking: true
-	});
-
-	geolocation.once('change', function(evt) {
-	  console.log(geolocation.getPosition());
-	  map.getView().setCenter(geolocation.getPosition());
-	  map.getView().setZoom(16);
+		if (evt.dragging) {
+			info.tooltip('hide');
+			return;
+		}
+		displayFeatureInfo(map.getEventPixel(evt.originalEvent));
 	});
 }
 
