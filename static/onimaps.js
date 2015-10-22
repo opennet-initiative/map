@@ -351,7 +351,7 @@ function getPopupContent(feature){
 	board=checkEmpty(feature.get('device_board'));
 	os_type = checkEmpty(feature.get('firmware_type'));
 	os_ver = checkEmpty(feature.get('firmware_release_name'));
-	cpuload = checkEmptyNum(100.0 * parseFloat(feature.get('system_load_15min'))).toFixed(2);
+	cpuload = feature.get('system_load_15min');
 	romload=100.0 - parseFloat(feature.get('device_memory_free')) / parseFloat(feature.get('device_memory_available'))
 	romload = checkEmptyNum(romload.toFixed(2));
 	lastseen = checkEmpty(feature.get('lastseen_timestamp'));
