@@ -158,8 +158,8 @@ function createNodeStyle(){
 	  var flappingStyle = [new ol.style.Style({
 		image: new ol.style.Circle({
 				radius: 5,
-			  fill: new ol.style.Fill({color: 'red', width: 2, opacity: 0.8}),
-			  stroke: new ol.style.Stroke({color: 'red', width: 1, opacity: 0.5})
+			  fill: new ol.style.Fill({color: 'rgba(255,0,0,0.8)', width: 2}),
+			  stroke: new ol.style.Stroke({color: 'red', width: 1})
 			}),
 	  })];
 	  var ugwStyle = [new ol.style.Style({
@@ -207,14 +207,18 @@ function createLinkStyle(){
 			  etx=feature.get('etx');
 			  if (etx){
 				  if (etx>1.0) {
-					  if (etx >=3.0){
-						  aircolor='red'; 
-					  }
-					  if (etx >=1.5){
+					  if (etx >=1.2){
 						  aircolor='green'; 
 					  }
-					  if (etx >=1.1){
-						  aircolor='aqua'; 
+					  else {
+						  if (etx >=1.1){
+							aircolor='red'; 
+						  }
+						  else {
+							if (etx >=1.05){
+								aircolor='aqua'; 
+							}  
+						  }
 					  }
 				  }
 				  else aircolor = '#1588eb';
