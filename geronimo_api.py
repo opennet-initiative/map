@@ -4,7 +4,7 @@ import threading
 import time
 import datetime
 import dateutil.parser
-from primitives import Accesspoint, Link
+from primitives import Accesspoint, Link, Site
 
 class Api(threading.Thread):
     '''
@@ -134,20 +134,23 @@ class Api(threading.Thread):
         sites={}
         for ap in aps:
             addr=ap.properties["post_address"]
-            try:
-                sites[addr].append(ap.main_ip)
-            except KeyError:
-                sites[addr]=[ap.main_ip]
-        self.sites=sites
-        logging.info("found %d accesspoint sites" % (len(sites)))
-        apsdict=self.__getAPasDict(aps)
+            if addr != '':
+                try:
+                    sites[addr].append(ap)
+                except KeyError:
+                    sites[addr]=[ap]
+        self.sites=[]
+        for site in sites:
+            aps = sites[site]
+            self.sites.append(Site(site,aps))
+        logging.info("found %d accesspoint sites" % (len(self.sites)))
         #detect cables between sites
         #TODO: allg. sites ausgeben und als primitiver Datentyp
         university=["Ulmenstraße 69","August-Bebel-Straße 28","Albert Einsteinstraße 22"]
         government=["HWBR","Bauamt"]
         cablesites=[]
-        for site in sites.keys():
-            if site in university:
+        for site in self.sites:
+            if site.name in university:
                 cablesites.append(site)
         for link in self.links:
             link.cable = False
@@ -159,7 +162,6 @@ class Api(threading.Thread):
             if (loc1 in government) and (loc2 in government):
                 if loc1 != loc2:
                     link.cable = True
-        #calculate centeroid
         
     def getSite(self):
         return self.sites

@@ -1,4 +1,5 @@
 from __future__ import division
+from shapely import geometry
 
 class Accesspoint(object):
     '''
@@ -26,3 +27,18 @@ class Link(object):
             return (1.0 / (float(lq) * float(nlq)))           
         except ZeroDivisionError:
             return 0.0
+
+class Site(object):
+    '''
+    Minimal Site Information
+    '''
+    def __init__(self,name, aps):
+        self.name = name
+        self.aps = aps
+    
+    def getCenter(self):
+        points=[]
+        for ap in self.aps:
+            points.append(geometry.Point((ap.lat, ap.lon)))
+        points=geometry.MultiPoint(points)
+        return points.centroid    

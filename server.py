@@ -69,9 +69,10 @@ def listSites():
         response.content_type = 'text/json; charset=UTF8'
         features = []
         for site in api.sites:
-            geom=Point(0,0)
-            feature = Feature(site,geom)
-            features.append(feature)
+            if len(site.aps) > 1:
+                geom=site.getCenter()
+                feature = Feature(site.name,geom)
+                features.append(feature)
         collection = FeatureCollection(features)
         return geojson.dumps(collection)
 

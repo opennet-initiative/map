@@ -111,6 +111,25 @@ function setupMap() {
 		style: (createNodeStyle()),
 		visible: false
 		}),
+		new ol.layer.Vector({
+		title: 'Standorte',
+		source: new ol.source.Vector({
+			url: '/api/sites',
+			format: new ol.format.GeoJSON({
+				//defaultDataProjection :'EPSG:4326', 
+				projection: 'EPSG:3857'
+			})
+		}),
+		style: [new ol.style.Style({
+			image: new ol.style.Circle({
+			  radius: 50,
+			  fill: new ol.style.Fill({
+				color: 'orange'
+			  }),
+			}),
+		})],
+		visible: false
+		}),
 		getHeadquarter()]
     );
     //refresh strategies
