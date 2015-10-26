@@ -208,15 +208,15 @@ function createLinkStyle(){
 			  if (etx){
 				  if (etx>1.0) {
 					  if (etx >=1.2){
-						  aircolor='green'; 
+						  aircolor='red'; 
 					  }
 					  else {
 						  if (etx >=1.1){
-							aircolor='red'; 
+							aircolor='#D915EB'; 
 						  }
 						  else {
 							if (etx >=1.05){
-								aircolor='aqua'; 
+								aircolor='#8015EB'; 
 							}  
 						  }
 					  }
