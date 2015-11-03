@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from bottle import route, template, request, response, run, static_file
 from geojson import FeatureCollection, Feature, Point, LineString
 from shapely import geometry
