@@ -149,7 +149,7 @@ class Api(threading.Thread):
         #detect cables between sites
         #TODO: allg. sites ausgeben und als primitiver Datentyp
         university=["Ulmenstraße 69","August-Bebel-Straße 28","Albert Einsteinstraße 22"]
-        government=["HWBR","Holbeinplatz 14, Bauamt"]
+        government=["HWBR","Holbeinplatz 14, Bauamt", "Industriestraße 12"]
         cablesites=[]
         for site in self.sites:
             if site.name in university:
