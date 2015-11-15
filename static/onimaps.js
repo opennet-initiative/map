@@ -1,8 +1,18 @@
 var map;
 
 function setupMap() {
-	//permalinks parsen
 	var zoom = 9, center = [12.5876, 54.0118];
+	//ip parsen
+	if (window.search != ''){
+		var ip = location.search.replace('?ip=', '');
+		xhttp = new XMLHttpRequest();
+		xhttp.open("GET", "/api/accesspoint/"+ip, false);
+		xhttp.send();
+		repl=JSON.parse(xhttp.responseText);
+		zoom = 17;
+		center = repl.geometry.coordinates;
+	}
+	//permalinks parsen
 	if (window.location.hash !== '') {
 	  var hash = window.location.hash.replace('#', '');
 	  var parts = hash.split(';');
