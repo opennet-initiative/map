@@ -120,14 +120,7 @@ function setupMap() {
 				projection: 'EPSG:3857'
 			})
 		}),
-		style: [new ol.style.Style({
-			image: new ol.style.Circle({
-			  radius: 50,
-			  fill: new ol.style.Fill({
-				color: 'orange'
-			  }),
-			}),
-		})],
+		style: (createStateStyle()),
 		visible: false
 		}),
 		getHeadquarter()]
@@ -194,6 +187,25 @@ function createNodeStyle(){
 			}
 		}
 	  };
+}
+
+function createStateStyle(){
+	return function(feature, resolution) {
+		return [new ol.style.Style({
+			image: new ol.style.Circle({
+			  radius: 50,
+			  fill: new ol.style.Fill({
+				color: 'rgba(255,200,0,0.8)'
+				  }),
+				}),
+		   text: new ol.style.Text({
+				text: feature.getId(),
+				fill: new ol.style.Fill({
+					color: 'black'
+				  }),
+			})
+		})];
+	};
 }
 
 function createLinkStyle(){
