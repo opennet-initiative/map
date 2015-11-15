@@ -35,7 +35,22 @@ def listAccesspoints(state="online"):
             collection = FeatureCollection(features)
             return geojson.dumps(collection)
             
-            
+@route('/api/accesspoint/<ip>')
+def bboxAccesspoint(ip=None):
+    if ip:
+        apiformat = request.query.format or 'json'
+        if apiformat == "json":
+            response.content_type = 'text/json; charset=UTF8'
+            ap = None
+            for apx in api.getAccesspoints(): #TODO: Use aps as dict later
+                if apx.main_ip == ip:
+                    ap = apx 
+            if ap:
+                p = geometry.Point((ap.lat, ap.lon))
+                feature = Feature(ap.main_ip, p, ap.__dict__)
+                return geojson.dumps(feature)
+            else:
+                raise httperror(status = 404)
 
 @route('/api/links')
 def listLinks():
