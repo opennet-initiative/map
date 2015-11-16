@@ -3,7 +3,7 @@ var map;
 function setupMap() {
 	var zoom = 9, center = [12.5876, 54.0118];
 	//ip parsen
-	if (window.search != ''){
+	if (location.search){
 		var ip = location.search.replace('?ip=', '');
 		xhttp = new XMLHttpRequest();
 		xhttp.open("GET", "/api/accesspoint/"+ip, false);
@@ -275,12 +275,14 @@ function getHeadquarter(){
 }
 
 function setupPermalinks(){
-	map.on('moveend', function() {
-		var view = map.getView();
-		var center = view.getCenter();
-		center = ol.proj.transform(center, 'EPSG:3857', 'EPSG:4326'),
-		window.location.hash = view.getZoom() + ';' + center[0] + ';' + center[1];
-	});
+	if (!location.search){
+		map.on('moveend', function() {
+			var view = map.getView();
+			var center = view.getCenter();
+			center = ol.proj.transform(center, 'EPSG:3857', 'EPSG:4326'),
+			window.location.hash = view.getZoom() + ';' + center[0] + ';' + center[1];
+		});
+	}
 }
 
 function setupPopup(){
