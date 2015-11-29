@@ -135,6 +135,7 @@ function setupMap() {
 		}),
 		getHeadquarter()]
     );
+    setupGeolocation();
     //refresh strategies
     window.setInterval(function() {
 	  //TODO: hier karte aktualisieren
@@ -272,6 +273,20 @@ function getHeadquarter(){
 			features: [hqFeature]
 		})
 	});
+}
+
+function setupGeolocation(){
+	var geolocation = new ol.Geolocation({
+		projection: map.getView().getProjection(),
+		tracking: true,
+	});
+	geolocation.on('change', function(evt) {
+		map.getView().setCenter(geolocation.getPosition());
+		map.getView().setZoom(18);
+		window.console.log(geolocation.getPosition());
+	});
+
+
 }
 
 function setupPermalinks(){
