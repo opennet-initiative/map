@@ -56,16 +56,32 @@ def bboxAccesspoint(ip=None):
 def listLinks():
     apiformat = request.query.format or 'json'
     bbox = request.query.bbox
+    route = request.query.route
     if apiformat == "json":
         response.content_type = 'text/json; charset=UTF8'
         features = []
         if bbox == "":
-            #return all links
-            for link in api.getLinks():
-                if link.state=="online":
-                    geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
-                    feature = Feature(link.ap1.main_ip+"-"+link.ap2.main_ip, geom, {"etx":link.etx,"cable":link.cable})
+            if route == "":
+                #return all links
+                for link in api.getLinks():
+                    if link.state=="online":
+                        geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
+                        feature = Feature(link.ap1.main_ip+"-"+link.ap2.main_ip, geom, {"etx":link.etx,"cable":link.cable})
+                        features.append(feature)
+            else:
+                #return links within traceroute
+                ips=route.split(",")
+                #TOOD: Lookup real links instead
+                aps=api.getAccesspointsAsDict()
+                points=[]
+                try:
+                    for ip in ips:
+                        points.append( (aps[ip].lat,aps[ip].lon) )
+                    geom=LineString(points)
+                    feature = Feature(ips[0]+"-"+ips[-1], geom, {})
                     features.append(feature)
+                except KeyError:
+                    raise httperror(status = 422)
         else:
             #only links touching the bbox
             bbox = bbox.split(",")
@@ -77,6 +93,8 @@ def listLinks():
                     features.append(feature)
         collection = FeatureCollection(features)
         return geojson.dumps(collection)
+
+@route('/api/')
 
 @route('/api/sites')
 def listSites():

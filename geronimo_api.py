@@ -87,6 +87,9 @@ class Api(threading.Thread):
     def getAccesspoints(self):
         return self.aps
     
+    def getAccesspointsAsDict(self):
+        return self.__getAPasDict(self.aps)
+    
     def __parseLinks(self,json,aps):
         ls =[]
         for item in json:
