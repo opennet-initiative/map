@@ -4,13 +4,20 @@ function setupMap() {
 	var zoom = 9, center = [12.5876, 54.0118];
 	//ip parsen
 	if (location.search){
-		var ip = location.search.replace('?ip=', '');
-		xhttp = new XMLHttpRequest();
-		xhttp.open("GET", "/api/accesspoint/"+ip, false);
-		xhttp.send();
-		repl=JSON.parse(xhttp.responseText);
-		zoom = 17;
-		center = repl.geometry.coordinates;
+		if (location.search.search("ip=")>-1) {
+			var ip = location.search.replace('?ip=', '');
+			xhttp = new XMLHttpRequest();
+			xhttp.open("GET", "/api/accesspoint/"+ip, false);
+			xhttp.send();
+			repl=JSON.parse(xhttp.responseText);
+			zoom = 17;
+			center = repl.geometry.coordinates;
+		}
+		else{
+			if(location.search.search("route=")>-1){
+				var route = location.search.replace('?route=', '');
+			}
+		}
 	}
 	//permalinks parsen
 	if (window.location.hash !== '') {
@@ -136,6 +143,9 @@ function setupMap() {
 		getHeadquarter()]
     );
     setupGeolocation();
+    if (route){
+		setupRoute(route);
+	}
     //refresh strategies
     window.setInterval(function() {
 	  //TODO: hier karte aktualisieren
@@ -482,4 +492,33 @@ function getApId(ip){
 
 function getGaugeImg(ip,rangeStr){
 	return "http://www.opennet-initiative.de/graph/ap.php?ap="+getApId(ip)+"&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range="+rangeStr
+}
+
+function setupRoute(ips){
+	var routeSource =  new ol.source.Vector({
+				url: '/api/links?route='+ips,
+				format: new ol.format.GeoJSON({
+					//defaultDataProjection :'EPSG:4326', 
+					projection: 'EPSG:3857'
+				}),
+	});
+	var routeStyle = new ol.style.Style({
+		  fill: new ol.style.Fill({
+			color: 'rgba(255, 255, 255, 0.6)'
+		  }),
+		  stroke: new ol.style.Stroke({
+			color: '#319FD3',
+			width: 5
+		  }),
+		});
+	var routeLayer = new ol.layer.Vector({
+			title: 'Route',
+			source: routeSource,
+			style: (routeStyle),
+		});
+	map.addLayer(routeLayer);
+	routeLayer.getSource().on("change", function(evt) {
+		var extent = routeSource.getExtent();
+		map.getView().fit(extent, map.getSize()); 
+	});
 }
