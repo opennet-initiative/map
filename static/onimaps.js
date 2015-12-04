@@ -507,7 +507,7 @@ function setupRoute(ips){
 			color: 'rgba(255, 255, 255, 0.6)'
 		  }),
 		  stroke: new ol.style.Stroke({
-			color: '#319FD3',
+			color: 'rgba(255,255,0,0.8)',
 			width: 5
 		  }),
 		});
@@ -517,8 +517,50 @@ function setupRoute(ips){
 			style: (routeStyle),
 		});
 	map.addLayer(routeLayer);
-	routeLayer.getSource().on("change", function(evt) {
+	routeLayer.setZIndex(6); 
+	routeSource.on('addfeature', function(e) {
+//		flash(e.feature);
+	});
+	routeSource.on("change", function(evt) {
 		var extent = routeSource.getExtent();
 		map.getView().fit(extent, map.getSize()); 
 	});
+}
+
+function flash(feature) {
+	//animierte Routen
+  var start = new Date().getTime();
+  var listenerKey;
+
+  function animate(event) {
+	  //blinken
+    var vectorContext = event.vectorContext;
+    var frameState = event.frameState;
+    var flashGeom = feature.getGeometry().clone();
+    var elapsed = frameState.time - start;
+    var elapsedRatio = elapsed / duration;
+    // radius will be 5 at start and 30 at end.
+    var radius = ol.easing.easeOut(elapsedRatio) * 25 + 5;
+    var opacity = ol.easing.easeOut(1 - elapsedRatio);
+
+    var flashStyle = new ol.style.Circle({
+      radius: radius,
+      snapToPixel: false,
+      stroke: new ol.style.Stroke({
+        color: 'rgba(255, 0, 0, ' + opacity + ')',
+        width: 1,
+        opacity: opacity
+      })
+    });
+
+    vectorContext.setImageStyle(flashStyle);
+    vectorContext.drawPointGeometry(flashGeom, null);
+    if (elapsed > duration) {
+      ol.Observable.unByKey(listenerKey);
+      return;
+    }
+    // tell OL3 to continue postcompose animation
+    frameState.animate = true;
+  }
+  listenerKey = map.on('postcompose', animate);
 }
