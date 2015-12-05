@@ -508,7 +508,8 @@ function setupRoute(ips){
 		  }),
 		  stroke: new ol.style.Stroke({
 			color: 'rgba(255,255,0,0.8)',
-			width: 5
+			width: 5,
+			lineDash: [4,8]
 		  }),
 		});
 	var routeLayer = new ol.layer.Vector({
