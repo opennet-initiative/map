@@ -349,7 +349,7 @@ function setupPopup(){
 				var ip = feature.get('main_ip');
 				content.innerHTML =getPopupContent(feature)
 				header = document.getElementById('popup-header');
-				header.innerHTML = "<h1>"+ip+"</h1>"+ "<small>"+feature.get('post_address')+"</small>",
+				header.innerHTML = "<h1>"+ip+"</h1>"+ "<small>"+feature.get('post_address')+"</small>";
 			  popoverlay.setPosition(coord);
 				//enable gauge switch (here DOM is populated)
 				$('#buttonday').on('click', function (e) {
@@ -433,6 +433,7 @@ function getPopupContent(feature){
 	links = "<a href=http://wiki.opennet-initiative.de/wiki/AP"+getApId(ip)+">Wiki</a> ";
 	links = links +"<a href='http://"+ip+"'>Webinterface</a> ";
 	links = links +"<a href='http://"+ip+":8080'>OLSRd</a> ";
+	links = links +'<a href="http://map.on-i.de/?ip='+ip+'">teilen</a>';
 	return gauge
 			+"<p>"
 			+device+"<br>"
