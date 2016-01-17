@@ -83,6 +83,8 @@ class Api(threading.Thread):
         r = requests.get("http://api.opennet-initiative.de/api/v1/accesspoint/?format=json")
         if r.status_code == requests.codes.ok:
             self.aps=self.__parseAccesspoint(r.json()) #TODO: Externalise
+        else:
+            logging.error("API Fehler %s", r.status_code)
     
     def getAccesspoints(self):
         return self.aps
