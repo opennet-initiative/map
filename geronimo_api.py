@@ -156,7 +156,7 @@ class Api(threading.Thread):
         logging.info("found %d accesspoint sites" % (len(self.sites)))
         #detect cables between sites
         #TODO: allg. sites ausgeben und als primitiver Datentyp
-        university=[u"Ulmenstraße 69",u"August-Bebel-Straße 28",u"Albert Einsteinstraße 22"]
+        university=[u"Ulmenstraße 69",u"August-Bebel-Straße 28",u"Albert-Einstein-Straße 22",u"Philiosophische Fakultät"]
         government=[u"HWBR",u"Holbeinplatz 14, Bauamt", u"Industriestraße 12"]
         cablesites=[]
         for site in self.sites:
