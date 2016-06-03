@@ -8,6 +8,9 @@ import datetime
 import dateutil.parser
 from primitives import Accesspoint, Link, Site
 
+
+#parsen als Klassenmethode bzw. Objekte auslagern
+
 class Api(threading.Thread):
     '''
     Client to access the main Opennet API (geronimo)

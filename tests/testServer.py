@@ -1,12 +1,16 @@
 import unittest
+#import geojson
 import server
-import geojson
 
 
 class Test(unittest.TestCase):
 
+    def testMap(self):
+        resp=server.hello()
+        print(resp)
+        
     def testAccesspointList(self):
-        response=server.listAccesspoints()
+        response=server.listAccesspoints() #mocken um offline zu testen
         coll = geojson.loads(response).features
         self.assertGreater(len(coll), 0)
 
