@@ -47,6 +47,7 @@ class Api(threading.Thread):
             state=self.__calcOnlineStatus(lastseen)
         except AttributeError:
             state="offline"
+            logging.warning("state error ("+str(lastseen)+")")
         ap.properties["state"]=state
         
     def __calcOnlineStatus(self,lastseen):
@@ -156,7 +157,7 @@ class Api(threading.Thread):
         logging.info("found %d accesspoint sites" % (len(self.sites)))
         #detect cables between sites
         #TODO: allg. sites ausgeben und als primitiver Datentyp
-        university=[u"Ulmenstraße 69",u"August-Bebel-Straße 28",u"Albert-Einstein-Straße 22",u"Philiosophische Fakultät"]
+        university=[u"Ulmenstraße 69",u"August-Bebel-Straße 28",u"Albert-Einstein-Straße 22",u"Server/tamago",u"Server/aqua",u"Philosophische Fakultät"]
         government=[u"HWBR",u"Holbeinplatz 14, Bauamt", u"Industriestraße 12"]
         cablesites=[]
         for site in self.sites:
