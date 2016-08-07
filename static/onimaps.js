@@ -51,7 +51,7 @@ function setupMap() {
 						title: 'MapQuest',
 						type: 'base',
 						visible: true,
-						source: new ol.source.MapQuest({layer: 'osm'})
+						source: new ol.source.OSM(),
 					}),
 					new ol.layer.Image({
 						//extent: [-13884991, 2870341, -7455066, 6338219],
