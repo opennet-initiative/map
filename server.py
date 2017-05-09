@@ -1,14 +1,48 @@
 # -*- coding: utf-8 -*-
-from bottle import route, template, request, response, run, static_file
+import logging
+import threading
+import time
+
+from bottle import template, request, response, run, static_file, Bottle, error
 from geojson import FeatureCollection, Feature, Point, LineString
 from shapely import geometry
 import geojson
-import logging
+
 import geronimo_api
+
+
+API_UPDATE_INTERVAL = 60
+
+
+# global variable for all functions
+api = geronimo_api.Api()
+def update_api():
+    while True:
+        api.update()
+        print("API Update finished: %d APs / %d Links"
+              .format(len(api.getAccesspoints()), len(api.getLinks())))
+        time.sleep(API_UPDATE_INTERVAL)
+threading.Thread(target=update_api, daemon=False).start()
+
+
+if __name__ == '__main__':
+    from bottle import route
+else:
+    # used by wsgi servers (e.g. uwsgi)
+    app = application = Bottle()
+    route = app.route
+
 
 @route('/api/accesspoints')
 @route('/api/accesspoints/<state>')
 def listAccesspoints(state="online"):
+    try:
+        return _get_accesspoints_with_state(state)
+    except Exception as exc:
+        print(exc)
+        return None
+
+def _get_accesspoints_with_state(state):
     apiformat = request.query.format or 'json'
     bbox = request.query.bbox
     if apiformat == "json":
@@ -19,7 +53,7 @@ def listAccesspoints(state="online"):
             for ap in api.getAccesspoints():
                 if ap.properties["state"]==state:
                     feature = Feature(ap.main_ip, Point((ap.lat, ap.lon)), ap.properties)
-                    features.append(feature) 
+                    features.append(feature)
             collection = FeatureCollection(features)
             return geojson.dumps(collection)
         else:
@@ -34,7 +68,8 @@ def listAccesspoints(state="online"):
                         features.append(feature)
             collection = FeatureCollection(features)
             return geojson.dumps(collection)
-            
+
+
 @route('/api/accesspoint/<ip>')
 def bboxAccesspoint(ip=None):
     if ip:
@@ -44,13 +79,14 @@ def bboxAccesspoint(ip=None):
             ap = None
             for apx in api.getAccesspoints(): #TODO: Use aps as dict later
                 if apx.main_ip == ip:
-                    ap = apx 
+                    ap = apx
             if ap:
                 p = geometry.Point((ap.lat, ap.lon))
                 feature = Feature(ap.main_ip, p, ap.__dict__)
                 return geojson.dumps(feature)
             else:
-                raise httperror(status = 404)
+                raise abort(404, "AP not found")
+
 
 @route('/api/links')
 def listLinks():
@@ -81,7 +117,7 @@ def listLinks():
                     feature = Feature(ips[0]+"-"+ips[-1], geom, {})
                     features.append(feature)
                 except KeyError:
-                    raise httperror(status = 422)
+                    raise abort(422, "Unknown")
         else:
             #only links touching the bbox
             bbox = bbox.split(",")
@@ -94,8 +130,8 @@ def listLinks():
         collection = FeatureCollection(features)
         return geojson.dumps(collection)
 
-@route('/api/')
 
+@route('/api/')
 @route('/api/sites')
 def listSites():
     apiformat = request.query.format or 'json'
@@ -110,16 +146,18 @@ def listSites():
         collection = FeatureCollection(features)
         return geojson.dumps(collection)
 
+
 @route('/static/<filepath:path>')
 def server_static(filepath):
     return static_file(filepath, root='./static/')
+
 
 @route('/')
 def hello():
     return template('map')
 
+
 if __name__ == '__main__':
     logging.basicConfig(filename='server.log', level=logging.DEBUG, format = '%(levelname)s %(asctime)-15s - %(message)s')
     logging.info("karten server gestartet")
-    api=geronimo_api.Api()
     run(host='localhost', port=8081, debug=True)

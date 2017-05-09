@@ -2,44 +2,40 @@
 
 import logging
 import requests
-import threading
-import time
 import datetime
 import dateutil.parser
 from primitives import Accesspoint, Link, Site
 
+API_URL = "http://api.opennet-initiative.de/api/v1/"
 
 #parsen als Klassenmethode bzw. Objekte auslagern
 
-class Api(threading.Thread):
+class Api:
     '''
     Client to access the main Opennet API (geronimo)
     '''
-    
-    API_INTERVALL=60
+
     MINUTES_FLAPPING=30
     DAYS_OFFLINE=30
 
 
     def __init__(self):
         logging.info("init API")
-        threading.Thread.__init__(self)
-        self.start()
-    
-    def run(self):
-        '''Update cache mainloop'''
-        while(True):
-            logging.info("pulling ONI-API...")
-            self.updateAccesspoints()
-            self.updateLinks()
-            self.calculateSites()        
-            time.sleep(self.API_INTERVALL)
-    
+        self.links = []
+        self.aps = []
+        self.update()
+
+    def update(self):
+        logging.info("pulling ONI-API...")
+        self.updateAccesspoints()
+        self.updateLinks()
+        self.calculateSites()
+
     def __AddAccesspointProperties(self,ap,item,properties):
         '''copy properties fields'''
         for prop in properties:
             ap.properties[prop]=item[prop]
-    
+
     def __setAccesspointOnlineStatus(self,ap):
         '''detect if online|flapping|offline'''
         try:
@@ -49,7 +45,7 @@ class Api(threading.Thread):
             state="offline"
             logging.warning("state error ("+str(lastseen)+")")
         ap.properties["state"]=state
-        
+
     def __calcOnlineStatus(self,lastseen):
         now=datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
         diff=(now-lastseen).total_seconds()
@@ -59,12 +55,12 @@ class Api(threading.Thread):
         if diff>=60*30*24*self.DAYS_OFFLINE:
             state="offline"
         return state
-    
+
     def __parsePoint(self, coordinates):
             lat = float(coordinates[0])
             lon = float(coordinates[1])
             return lat, lon
-               
+
     def __parseAccesspoint(self,json):
         ls =[]
         for item in json:
@@ -79,23 +75,23 @@ class Api(threading.Thread):
                     ls.append(ap)
                 except ValueError:
                     logging.warning("AP ungültige Position (%s - %s)" % item["main_ip"], pos)
-            else: logging.warning("AP ohne Position (%s)" % item["main_ip"])
+            else: logging.info("AP ohne Position (%s)" % item["main_ip"])
         return ls
-    
+
     def updateAccesspoints(self):
         ''''returns all Accesspoints as objects'''
-        r = requests.get("http://api.opennet-initiative.de/api/v1/accesspoint/?format=json")
+        r = requests.get(API_URL + "accesspoint/?format=json")
         if r.status_code == requests.codes.ok:
             self.aps=self.__parseAccesspoint(r.json()) #TODO: Externalise
         else:
-            logging.error("API Fehler %s", r.status_code)
-    
+            logging.error("API Fehler (accesspoint) %s", r.status_code)
+
     def getAccesspoints(self):
         return self.aps
-    
+
     def getAccesspointsAsDict(self):
         return self.__getAPasDict(self.aps)
-    
+
     def __parseLinks(self,json,aps):
         ls =[]
         for item in json:
@@ -116,29 +112,31 @@ class Api(threading.Thread):
                 link.state=state
                 ls.append(link)
             except KeyError:
-                logging.warning("Link zu unbekanntem AP (%s - %s)" % (ip1,ip2))
+                logging.info("Link zu unbekanntem AP (%s - %s)" % (ip1,ip2))
             except IndexError:
-                logging.warning("Link mit fehlenden APs " % item)
+                logging.info("Link mit fehlenden APs " % item)
         return ls
-    
+
     def __getAPasDict(self,apList):
         dic={}
         for ap in apList:
             dic[ap.main_ip]=ap
         return dic
-    
+
     def updateLinks(self):
         ''''returns all links between Accesspoints as objects'''
-        r = requests.get("http://api.opennet-initiative.de/api/v1/link/?format=json")
+        r = requests.get(API_URL + "link/?format=json")
         if r.status_code == requests.codes.ok:
             if not hasattr(self,"aps"):
                 self.getAccesspoints()
             apDict = self.__getAPasDict(self.aps)
             self.links=self.__parseLinks(r.json(),apDict)
-    
+        else:
+            logging.error("API Fehler (link) %s", r.status_code)
+
     def getLinks(self):
         return self.links
-        
+
     def calculateSites(self):
         '''calculates cluster of nodes within same building'''
         aps=self.getAccesspoints()
@@ -173,14 +171,13 @@ class Api(threading.Thread):
             if (loc1 in government) and (loc2 in government):
                 if loc1 != loc2:
                     link.cable = True
-        
+
     def getSite(self):
         return self.sites
-                    
-                
+
         #links durchgehen
         # - beide Enden in Universität?
-                
+
         #Kabel ausblenden (hardgecodete Liste)
         #Backbones erkennen
         #Links in Gebäuden uninteressant

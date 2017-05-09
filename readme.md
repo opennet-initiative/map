@@ -6,7 +6,7 @@ onimap ist das Kartenportal des Opennet.
 * `virtualenv --distribute -p /usr/bin/python3.2 ~/.virtualenvs/on-map`
 * `workon on-map`
 * git repo clonen und reinwechseln
-* `pip install -r requiements.txt`
+* `pip install -r requirements.txt`
 * Lokal testen: `python server.py`
 * Webserver-Konfiguration für WSGI anpassen ([siehe bottlepy docs](http://bottlepy.org/docs/dev/deployment.html))
 
