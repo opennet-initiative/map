@@ -1,5 +1,9 @@
 *.pyc
+*.swp
 .project
 .pydevproject
 ol-debug.js
 *.log
+
+build/
+dist/
