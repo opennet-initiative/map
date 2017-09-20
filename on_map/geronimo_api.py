@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 import logging
 import requests
-import datetime
+
 import dateutil.parser
-from primitives import Accesspoint, Link, Site
+
+from on_map.primitives import Accesspoint, Link, Site
+
 
 API_URL = "http://api.opennet-initiative.de/api/v1/"
 

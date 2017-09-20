@@ -8,14 +8,14 @@ from geojson import FeatureCollection, Feature, Point, LineString
 from shapely import geometry
 import geojson
 
-import geronimo_api
+import on_map.geronimo_api
 
 
 API_UPDATE_INTERVAL = 60
 
 
 # global variable for all functions
-api = geronimo_api.Api()
+api = on_map.geronimo_api.Api()
 def update_api():
     while True:
         api.update()
