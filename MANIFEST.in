@@ -1,0 +1,21 @@
+include LICENSE
+include README.md
+
+include static/layerswitcher/ol3-layerswitcher.css
+include static/layerswitcher/ol3-layerswitcher.js
+include static/headquarter.png
+include static/openlayers/ol.js
+include static/openlayers/ol.css
+include static/jquery/jquery-2.1.4.min.js
+include static/bootstrap/fonts/glyphicons-halflings-regular.woff
+include static/bootstrap/fonts/glyphicons-halflings-regular.ttf
+include static/bootstrap/fonts/glyphicons-halflings-regular.svg
+include static/bootstrap/fonts/glyphicons-halflings-regular.woff2
+include static/bootstrap/fonts/glyphicons-halflings-regular.eot
+include static/bootstrap/css/bootstrap-theme.min.css
+include static/bootstrap/css/bootstrap.min.css
+include static/bootstrap/js/bootstrap.min.js
+include static/bootstrap/js/npm.js
+include static/onimaps.js
+
+include views/map.tpl
