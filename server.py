@@ -157,7 +157,11 @@ def hello():
     return template('map')
 
 
-if __name__ == '__main__':
+def main_func():
     logging.basicConfig(filename='server.log', level=logging.DEBUG, format = '%(levelname)s %(asctime)-15s - %(message)s')
     logging.info("karten server gestartet")
     run(host='localhost', port=8081, debug=True)
+
+
+if __name__ == '__main__':
+    main_func()
