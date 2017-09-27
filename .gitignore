@@ -7,3 +7,6 @@ ol-debug.js
 
 build/
 dist/
+on_map.egg-info/
+debian/on-map-web/
+debian/python3-on-map/

@@ -1,0 +1,29 @@
+Source: on-map
+Section: net
+Priority: optional
+Maintainer: Lars Kruse <devel@sumpfralle.de>
+Build-Depends: debhelper (>= 9), python3, python3-bottle,
+ python3-geojson, python3-shapely
+Standards-Version: 4.0.0
+Homepage: https://on-i.de/wiki/Karte
+Vcs-Git: https://dev.opennet-initiative.de/git/on_map.git
+Vcs-Browser: http://dev.opennet-initiative.de/browser/on_map
+
+Package: python3-on-map
+Architecture: all
+Depends: python3, python3-pkg-resources, python3-bottle,
+ python3-geojson, python3-shapely, ${misc:Depends}
+Description: Informationssammlung für die Opennet Initiative.
+ Daten werden aus verschiedenen Quellen gesammelt und können mittels
+ einer einheitlichen API für verschiedene Nutzungszwecke
+ bereitgestellt werden.
+
+Package: on-map-web
+Architecture: all
+Depends: adduser, python3, python3-on-map, ${misc:Depends}
+Recommends: uwsgi, uwsgi-plugin-python3
+Suggests: apache2
+Description: Kartendarstellung für die Opennet Initiative.
+ Daten der Knoten und Verbindungen innerhalb des Mesh-Netzwerks werden
+ aus der on-geronimo-Datensammlung abgerufen und eingebettet in eine
+ Karte dargestellt.

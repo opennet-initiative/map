@@ -1,0 +1,7 @@
+#!/usr/bin/make -f
+
+
+%:
+	PYBUILD_DESTDIR=debian/python3-on-map PYBUILD_DISABLE=test \
+		dh $@ --package python3-on-map --with python3 --buildsystem=pybuild
+	dh $@ --package on-map-web
