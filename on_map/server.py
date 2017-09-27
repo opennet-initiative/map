@@ -3,7 +3,7 @@ import logging
 import threading
 import time
 
-from bottle import template, request, response, run, static_file, Bottle, error
+from bottle import template, request, response, run, static_file, Bottle, abort
 from geojson import FeatureCollection, Feature, Point, LineString
 from shapely import geometry
 import geojson
@@ -16,12 +16,16 @@ API_UPDATE_INTERVAL = 60
 
 # global variable for all functions
 api = on_map.geronimo_api.Api()
+
+
 def update_api():
     while True:
         api.update()
         print("API Update finished: %d APs / %d Links"
-              .format(len(api.getAccesspoints()), len(api.getLinks())))
+              .format(len(api.get_accesspoints()), len(api.get_links())))
         time.sleep(API_UPDATE_INTERVAL)
+
+
 threading.Thread(target=update_api, daemon=False).start()
 
 
@@ -35,12 +39,13 @@ else:
 
 @route('/api/accesspoints')
 @route('/api/accesspoints/<state>')
-def listAccesspoints(state="online"):
+def list_accesspoints(state="online"):
     try:
         return _get_accesspoints_with_state(state)
     except Exception as exc:
         print(exc)
         return None
+
 
 def _get_accesspoints_with_state(state):
     apiformat = request.query.format or 'json'
@@ -49,21 +54,21 @@ def _get_accesspoints_with_state(state):
         response.content_type = 'text/json; charset=UTF8'
         features = []
         if bbox == "":
-            #return all online APs
-            for ap in api.getAccesspoints():
-                if ap.properties["state"]==state:
+            # return all online APs
+            for ap in api.get_accesspoints():
+                if ap.properties["state"] == state:
                     feature = Feature(ap.main_ip, Point((ap.lat, ap.lon)), ap.properties)
                     features.append(feature)
             collection = FeatureCollection(features)
             return geojson.dumps(collection)
         else:
-            #only online APs within the bbox
+            # only online APs within the bbox
             bbox = bbox.split(",")
-            bbox = geometry.geo.box(float(bbox[0]),float(bbox[1]),float(bbox[2]),float(bbox[3]))
-            for ap in api.getAccesspoints():
+            bbox = geometry.geo.box(float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3]))
+            for ap in api.get_accesspoints():
                 p = geometry.Point((ap.lat, ap.lon))
                 if bbox.contains(p):
-                    if ap.properties["state"]==state:
+                    if ap.properties["state"] == state:
                         feature = Feature(ap.main_ip, p, ap.__dict__)
                         features.append(feature)
             collection = FeatureCollection(features)
@@ -71,13 +76,13 @@ def _get_accesspoints_with_state(state):
 
 
 @route('/api/accesspoint/<ip>')
-def bboxAccesspoint(ip=None):
+def bbox_accesspoint(ip=None):
     if ip:
         apiformat = request.query.format or 'json'
         if apiformat == "json":
             response.content_type = 'text/json; charset=UTF8'
             ap = None
-            for apx in api.getAccesspoints(): #TODO: Use aps as dict later
+            for apx in api.get_accesspoints():  # TODO: Use aps as dict later
                 if apx.main_ip == ip:
                     ap = apx
             if ap:
@@ -89,7 +94,7 @@ def bboxAccesspoint(ip=None):
 
 
 @route('/api/links')
-def listLinks():
+def list_links():
     apiformat = request.query.format or 'json'
     bbox = request.query.bbox
     route = request.query.route
@@ -98,34 +103,38 @@ def listLinks():
         features = []
         if bbox == "":
             if route == "":
-                #return all links
-                for link in api.getLinks():
-                    if link.state=="online":
-                        geom=LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
-                        feature = Feature(link.ap1.main_ip+"-"+link.ap2.main_ip, geom, {"etx":link.etx,"cable":link.cable})
+                # return all links
+                for link in api.get_links():
+                    if link.state == "online":
+                        geom = LineString([(link.ap1.lat, link.ap1.lon),
+                                           (link.ap2.lat, link.ap2.lon)])
+                        feature = Feature(link.ap1.main_ip + "-" + link.ap2.main_ip, geom,
+                                          {"etx": link.etx, "cable": link.cable})
                         features.append(feature)
             else:
-                #return links within traceroute
-                ips=route.split(",")
-                #TOOD: Lookup real links instead
-                aps=api.getAccesspointsAsDict()
-                points=[]
+                # return links within traceroute
+                ips = route.split(",")
+                # TOOD: Lookup real links instead
+                aps = api.get_accesspoints_as_dict()
+                points = []
                 try:
                     for ip in ips:
-                        points.append( (aps[ip].lat,aps[ip].lon) )
-                    geom=LineString(points)
-                    feature = Feature(ips[0]+"-"+ips[-1], geom, {})
+                        points.append((aps[ip].lat, aps[ip].lon))
+                    geom = LineString(points)
+                    feature = Feature(ips[0] + "-" + ips[-1], geom, {})
                     features.append(feature)
                 except KeyError:
                     raise abort(422, "Unknown")
         else:
-            #only links touching the bbox
+            # only links touching the bbox
             bbox = bbox.split(",")
-            bbox = geometry.geo.box(float(bbox[0]),float(bbox[1]),float(bbox[2]),float(bbox[3]))
-            for link in api.getLinks():
-                geom=geometry.LineString([(link.ap1.lat, link.ap1.lon), (link.ap2.lat, link.ap2.lon)])
+            bbox = geometry.geo.box(float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3]))
+            for link in api.get_links():
+                geom = geometry.LineString([(link.ap1.lat, link.ap1.lon),
+                                            (link.ap2.lat, link.ap2.lon)])
                 if bbox.contains(geom):
-                    feature = Feature(link.ap1.main_ip+"-"+link.ap2.main_ip, geom, {"lq":link.lq,"rlq":link.rlq,"cable":link.cable})
+                    feature = Feature(link.ap1.main_ip + "-" + link.ap2.main_ip, geom,
+                                      {"lq": link.lq, "rlq": link.rlq, "cable": link.cable})
                     features.append(feature)
         collection = FeatureCollection(features)
         return geojson.dumps(collection)
@@ -133,15 +142,15 @@ def listLinks():
 
 @route('/api/')
 @route('/api/sites')
-def listSites():
+def list_sites():
     apiformat = request.query.format or 'json'
     if apiformat == "json":
         response.content_type = 'text/json; charset=UTF8'
         features = []
         for site in api.sites:
             if len(site.aps) > 1:
-                geom=site.getCenter()
-                feature = Feature(site.name,geom)
+                geom = site.get_center()
+                feature = Feature(site.name, geom)
                 features.append(feature)
         collection = FeatureCollection(features)
         return geojson.dumps(collection)
@@ -158,7 +167,8 @@ def hello():
 
 
 def main_func():
-    logging.basicConfig(filename='server.log', level=logging.DEBUG, format = '%(levelname)s %(asctime)-15s - %(message)s')
+    logging.basicConfig(filename='server.log', level=logging.DEBUG,
+                        format='%(levelname)s %(asctime)-15s - %(message)s')
     logging.info("karten server gestartet")
     run(host='localhost', port=8081, debug=True)
 

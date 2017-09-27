@@ -11,16 +11,13 @@ from on_map.primitives import Accesspoint, Link, Site
 
 API_URL = "http://api.opennet-initiative.de/api/v1/"
 
-#parsen als Klassenmethode bzw. Objekte auslagern
 
+# TODO: parsen als Klassenmethode bzw. Objekte auslagern
 class Api:
-    '''
-    Client to access the main Opennet API (geronimo)
-    '''
+    ''' Client to access the main Opennet API (geronimo) '''
 
-    MINUTES_FLAPPING=30
-    DAYS_OFFLINE=30
-
+    MINUTES_FLAPPING = 30
+    DAYS_OFFLINE = 30
 
     def __init__(self):
         logging.info("init API")
@@ -30,144 +27,156 @@ class Api:
 
     def update(self):
         logging.info("pulling ONI-API...")
-        self.updateAccesspoints()
-        self.updateLinks()
-        self.calculateSites()
+        self.update_accesspoints()
+        self.update_links()
+        self.calculate_sites()
 
-    def __AddAccesspointProperties(self,ap,item,properties):
+    def _add_accesspoint_properties(self, ap, item, properties):
         '''copy properties fields'''
         for prop in properties:
-            ap.properties[prop]=item[prop]
+            ap.properties[prop] = item[prop]
 
-    def __setAccesspointOnlineStatus(self,ap):
+    def _set_accesspoint_online_status(self, ap):
         '''detect if online|flapping|offline'''
         try:
-            lastseen=dateutil.parser.parse(ap.properties["lastseen_timestamp"])
-            state=self.__calcOnlineStatus(lastseen)
+            lastseen = dateutil.parser.parse(ap.properties["lastseen_timestamp"])
+            state = self._calc_online_status(lastseen)
         except AttributeError:
-            state="offline"
+            state = "offline"
             logging.warning("state error ("+str(lastseen)+")")
-        ap.properties["state"]=state
+        ap.properties["state"] = state
 
-    def __calcOnlineStatus(self,lastseen):
-        now=datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
-        diff=(now-lastseen).total_seconds()
-        state="online"
-        if diff>=60*self.MINUTES_FLAPPING:
-            state="flapping"
-        if diff>=60*30*24*self.DAYS_OFFLINE:
-            state="offline"
+    def _calc_online_status(self, lastseen):
+        now = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
+        diff = (now - lastseen).total_seconds()
+        state = "online"
+        if diff >= 60 * self.MINUTES_FLAPPING:
+            state = "flapping"
+        if diff >= 60 * 30 * 24 * self.DAYS_OFFLINE:
+            state = "offline"
         return state
 
-    def __parsePoint(self, coordinates):
+    def _parse_point(self, coordinates):
             lat = float(coordinates[0])
             lon = float(coordinates[1])
             return lat, lon
 
-    def __parseAccesspoint(self,json):
-        ls =[]
+    def _parse_accesspoint(self, json):
+        ls = []
         for item in json:
-            #nur wenn Position verfügbar aufnehmen
-            pos=item["position"]
+            # nur wenn Position verfügbar aufnehmen
+            pos = item["position"]
             if pos is not None:
                 try:
-                    lat, lon = self.__parsePoint(pos["coordinates"])
+                    lat, lon = self._parse_point(pos["coordinates"])
                     ap = Accesspoint(item["main_ip"], lat, lon)
-                    self.__AddAccesspointProperties(ap,item,["main_ip","device_model","device_board","system_uptime","lastseen_timestamp","owner","system_load_15min","device_memory_available","device_memory_free","firmware_type","firmware_release_name","opennet_version","firmware_install_timestamp","opennet_captive_portal_enabled","post_address","opennet_service_relay_enabled"])
-                    self.__setAccesspointOnlineStatus(ap)
+                    self._add_accesspoint_properties(ap, item, [
+                        "main_ip", "device_model", "device_board", "system_uptime",
+                        "lastseen_timestamp", "owner", "system_load_15min",
+                        "device_memory_available", "device_memory_free", "firmware_type",
+                        "firmware_release_name", "opennet_version", "firmware_install_timestamp",
+                        "opennet_captive_portal_enabled", "post_address",
+                        "opennet_service_relay_enabled"])
+                    self._set_accesspoint_online_status(ap)
                     ls.append(ap)
                 except ValueError:
                     logging.warning("AP ungültige Position (%s - %s)" % item["main_ip"], pos)
-            else: logging.info("AP ohne Position (%s)" % item["main_ip"])
+            else:
+                logging.info("AP ohne Position (%s)" % item["main_ip"])
         return ls
 
-    def updateAccesspoints(self):
-        ''''returns all Accesspoints as objects'''
+    def update_accesspoints(self):
+        ''' returns all Accesspoints as objects '''
         r = requests.get(API_URL + "accesspoint/?format=json")
         if r.status_code == requests.codes.ok:
-            self.aps=self.__parseAccesspoint(r.json()) #TODO: Externalise
+            self.aps = self._parse_accesspoint(r.json())  # TODO: Externalise
         else:
             logging.error("API Fehler (accesspoint) %s", r.status_code)
 
-    def getAccesspoints(self):
+    def get_accesspoints(self):
         return self.aps
 
-    def getAccesspointsAsDict(self):
-        return self.__getAPasDict(self.aps)
+    def get_accesspoints_as_dict(self):
+        return self._get_ap_as_dict(self.aps)
 
-    def __parseLinks(self,json,aps):
-        ls =[]
+    def _parse_links(self, json, aps):
+        ls = []
         for item in json:
             try:
-                ep1=item["endpoints"][0]
-                ep2=item["endpoints"][1]
-                ip1= ep1["interface"]["ip_address"]
-                ip2= ep2["interface"]["ip_address"]
+                ep1 = item["endpoints"][0]
+                ep2 = item["endpoints"][1]
+                ip1 = ep1["interface"]["ip_address"]
+                ip2 = ep2["interface"]["ip_address"]
                 lq = ep1["quality"]
                 nlq = ep1["quality"]
-                link = Link(aps[ip1],aps[ip2],lq,nlq)
+                link = Link(aps[ip1], aps[ip2], lq, nlq)
                 try:
-                    timestamp=item["timestamp"]
-                    lastseen=dateutil.parser.parse(timestamp)
-                    state=self.__calcOnlineStatus(lastseen)
+                    timestamp = item["timestamp"]
+                    lastseen = dateutil.parser.parse(timestamp)
+                    state = self._calc_online_status(lastseen)
                 except AttributeError:
-                    state="offline"
-                link.state=state
+                    state = "offline"
+                link.state = state
                 ls.append(link)
             except KeyError:
-                logging.info("Link zu unbekanntem AP (%s - %s)" % (ip1,ip2))
+                logging.info("Link zu unbekanntem AP (%s - %s)" % (ip1, ip2))
             except IndexError:
                 logging.info("Link mit fehlenden APs " % item)
         return ls
 
-    def __getAPasDict(self,apList):
-        dic={}
-        for ap in apList:
-            dic[ap.main_ip]=ap
+    def _get_ap_as_dict(self, ap_list):
+        dic = {}
+        for ap in ap_list:
+            dic[ap.main_ip] = ap
         return dic
 
-    def updateLinks(self):
-        ''''returns all links between Accesspoints as objects'''
+    def update_links(self):
+        ''' returns all links between Accesspoints as objects '''
         r = requests.get(API_URL + "link/?format=json")
         if r.status_code == requests.codes.ok:
-            if not hasattr(self,"aps"):
-                self.getAccesspoints()
-            apDict = self.__getAPasDict(self.aps)
-            self.links=self.__parseLinks(r.json(),apDict)
+            if not hasattr(self, "aps"):
+                self.get_accesspoints()
+            ap_dict = self._get_ap_as_dict(self.aps)
+            self.links = self._parse_links(r.json(), ap_dict)
         else:
             logging.error("API Fehler (link) %s", r.status_code)
 
-    def getLinks(self):
+    def get_links(self):
         return self.links
 
-    def calculateSites(self):
-        '''calculates cluster of nodes within same building'''
-        aps=self.getAccesspoints()
-        sites={}
+    def calculate_sites(self):
+        ''' calculates cluster of nodes within same building '''
+        aps = self.get_accesspoints()
+        sites = {}
         for ap in aps:
-            addr=ap.properties["post_address"]
+            addr = ap.properties["post_address"]
             if addr != '':
                 try:
                     sites[addr].append(ap)
                 except KeyError:
-                    sites[addr]=[ap]
-        self.sites=[]
+                    sites[addr] = [ap]
+        self.sites = []
         for site in sites:
             aps = sites[site]
-            self.sites.append(Site(site,aps))
+            self.sites.append(Site(site, aps))
         logging.info("found %d accesspoint sites" % (len(self.sites)))
-        #detect cables between sites
-        #TODO: allg. sites ausgeben und als primitiver Datentyp
-        university=[u"Ulmenstraße 69",u"August-Bebel-Straße 28",u"Albert-Einstein-Straße 22",u"Server/tamago",u"Server/aqua",u"Philosophische Fakultät"]
-        government=[u"HWBR",u"Holbeinplatz 14, Bauamt", u"Industriestraße 12"]
-        cablesites=[]
+        # detect cables between sites
+        # TODO: allg. sites ausgeben und als primitiver Datentyp
+        university = [u"Ulmenstraße 69",
+                      u"August-Bebel-Straße 28",
+                      u"Albert-Einstein-Straße 22",
+                      u"Server/tamago",
+                      u"Server/aqua",
+                      u"Philosophische Fakultät"]
+        government = [u"HWBR", u"Holbeinplatz 14, Bauamt", u"Industriestraße 12"]
+        cablesites = []
         for site in self.sites:
             if site.name in university:
                 cablesites.append(site)
         for link in self.links:
             link.cable = False
-            loc1=link.ap1.properties["post_address"]
-            loc2=link.ap2.properties["post_address"]
+            loc1 = link.ap1.properties["post_address"]
+            loc2 = link.ap2.properties["post_address"]
             if (loc1 in university) and (loc2 in university):
                 if loc1 != loc2:
                     link.cable = True
@@ -175,12 +184,13 @@ class Api:
                 if loc1 != loc2:
                     link.cable = True
 
-    def getSite(self):
+    # TODO: method is not in use
+    def get_site(self):
         return self.sites
 
-        #links durchgehen
+        # links durchgehen
         # - beide Enden in Universität?
 
-        #Kabel ausblenden (hardgecodete Liste)
-        #Backbones erkennen
-        #Links in Gebäuden uninteressant
+        # Kabel ausblenden (hardgecodete Liste)
+        # Backbones erkennen
+        # Links in Gebäuden uninteressant
