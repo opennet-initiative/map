@@ -26,7 +26,7 @@ def update_api():
         time.sleep(API_UPDATE_INTERVAL)
 
 
-threading.Thread(target=update_api, daemon=False).start()
+threading.Thread(target=update_api, daemon=True).start()
 
 
 if __name__ == '__main__':
