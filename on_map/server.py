@@ -21,7 +21,7 @@ api = on_map.geronimo_api.Api()
 def update_api():
     while True:
         api.update()
-        print("API Update finished: %d APs / %d Links"
+        print("API Update finished: {:d} APs / {:d} Links"
               .format(len(api.get_accesspoints()), len(api.get_links())))
         time.sleep(API_UPDATE_INTERVAL)
 
