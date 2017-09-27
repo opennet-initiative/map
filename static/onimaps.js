@@ -59,15 +59,15 @@ function setupMap() {
                         type: 'base',
                         visible: false,
                         source: new ol.source.ImageWMS({
-                            url: 'http://www.geodaten-mv.de/dienste/adv_dop',
+                            url: 'https://www.geodaten-mv.de/dienste/adv_dop',
                             params: {
                                 'LAYERS': 'adv_dop'
                             },
                             serverType: 'geoserver',
                             attributions: [
                                 new ol.Attribution({
-                                    html: '<img src="http://www.geoportal-mv.de/land-mv/GeoPortalMV_prod/de/_Bilder/favicon.ico">' + 'Luftbilder &copy; ' +
-                                        '<a href="http://www.geoportal-mv.de/land-mv/GeoPortalMV_prod/de/Geowebdienste/index.jsp">Landesamt für innere Verwaltung Mecklenburg-Vorpommern - Amt für Geoinformation, Vermessungs- und Katasterwesen</a>'
+                                    html: '<img src="https://www.geoportal-mv.de/land-mv/GeoPortalMV_prod/de/_Bilder/favicon.ico">' + 'Luftbilder &copy; ' +
+                                        '<a href="https://www.geoportal-mv.de/land-mv/GeoPortalMV_prod/de/Geowebdienste/index.jsp">Landesamt für innere Verwaltung Mecklenburg-Vorpommern - Amt für Geoinformation, Vermessungs- und Katasterwesen</a>'
                                 })
                             ],
                         })
@@ -475,10 +475,10 @@ function getPopupContent(feature) {
     uptime = checkEmpty(feature.get('system_uptime'));
     installtime = checkEmpty(feature.get('firmware_install_timestamp'));
     operator = checkEmpty(feature.get('owner'));
-    links = "<a href=http://wiki.opennet-initiative.de/wiki/AP" + getApId(ip) + ">Wiki</a> ";
+    links = "<a href=https://wiki.opennet-initiative.de/wiki/AP" + getApId(ip) + ">Wiki</a> ";
     links = links + "<a href='http://" + ip + "'>Webinterface</a> ";
     links = links + "<a href='http://" + ip + ":8080'>OLSRd</a> ";
-    links = links + '<a href="http://map.on-i.de/?ip=' + ip + '">teilen</a>';
+    links = links + '<a href="https://map.on-i.de/?ip=' + ip + '">teilen</a>';
     return gauge +
         "<p>" +
         device + "<br>" +
@@ -537,7 +537,7 @@ function getApId(ip) {
 }
 
 function getGaugeImg(ip, rangeStr) {
-    return "http://www.opennet-initiative.de/graph/ap.php?ap=" + getApId(ip) + "&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=" + rangeStr
+    return "https://www.opennet-initiative.de/graph/ap.php?ap=" + getApId(ip) + "&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=" + rangeStr
 }
 
 function setupRoute(ips) {
