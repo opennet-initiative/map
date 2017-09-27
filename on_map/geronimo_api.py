@@ -9,7 +9,7 @@ import dateutil.parser
 from on_map.primitives import Accesspoint, Link, Site
 
 
-API_URL = "http://api.opennet-initiative.de/api/v1/"
+API_URL = "https://api.opennet-initiative.de/api/v1/"
 
 
 # TODO: parsen als Klassenmethode bzw. Objekte auslagern
