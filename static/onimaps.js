@@ -136,7 +136,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Standorte',
             source: new ol.source.Vector({
-                url: '/api/v1/sites',
+                url: '/api/v1/sites/?data_format=geojson',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -281,20 +281,22 @@ function createLinkStyle() {
             }),
         });
         // TODO: move "cable" attribute
-        if (link.get('cable')) {
+        if (feature.get('cable')) {
             return [cableStyle];
         } else {
-            quality = Math.max(link['endpoints'][0]['quality'], link['endpoints'][1]['quality'])
+            quality = feature.get('quality');
             if (quality) {
                 if (quality >= 1.0) {
                     aircolor = '#1588eb';
-                } else if (etx > 0.95) {
+                } else if (quality > 0.95) {
                     aircolor = '#8015EB';
                 } else if (quality > 0.9) {
                     aircolor = '#D915EB';
                 } else {
                     aircolor = 'red';
                 }
+            } else {
+                aircolor = 'yellow';
             }
             var airStyle = new ol.style.Style({
                 stroke: new ol.style.Stroke({
@@ -384,11 +386,11 @@ function setupPopup() {
             function(node, layer) {
                 return node;
             });
-        if (node) {
-            if (node.get('main_ip')) {
-                var coord = node.position.coordinates;
-                var ip = node.get('main_ip');
-                content.innerHTML = getPopupContent(node)
+        if (feature) {
+            if (feature.get('main_ip')) {
+                var coord = feature.getGeometry().getCoordinates();
+                var ip = feature.get('main_ip');
+                content.innerHTML = getPopupContent(feature);
                 header = document.getElementById('popup-header');
                 header.innerHTML = "<h1>" + ip + "</h1>" + "<small>" + node.get('post_address') + "</small>";
                 popoverlay.setPosition(coord);
