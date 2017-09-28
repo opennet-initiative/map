@@ -12,7 +12,7 @@ function setupMap() {
             xhttp.send();
             repl = JSON.parse(xhttp.responseText);
             zoom = 17;
-            center = repl.geometry.coordinates;
+            center = repl.position.coordinates;
         } else {
             if (location.search.search("route=") > -1) {
                 var route = location.search.replace('?route=', '');
@@ -91,7 +91,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Links',
             source: new ol.source.Vector({
-                url: '/api/links',
+                url: '/api/link/',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -102,7 +102,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Accesspoints online',
             source: new ol.source.Vector({
-                url: '/api/accesspoints/online',
+                url: '/api/accesspoint/?status=online',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -113,7 +113,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Accesspoints instabil',
             source: new ol.source.Vector({
-                url: '/api/accesspoints/flapping',
+                url: '/api/accesspoint/?status=flapping',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -124,7 +124,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Accesspoints offline',
             source: new ol.source.Vector({
-                url: '/api/accesspoints/offline',
+                url: '/api/accesspoint/?status=offline',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -233,17 +233,17 @@ function createNodeStyle() {
             })
         }),
     })];
-    return function(feature, resolution) {
-        if (feature.get('opennet_captive_portal_enabled')) {
+    return function(node, resolution) {
+        if (node.get('opennet_captive_portal_enabled')) {
             return hotspotStyle;
         }
-        if (feature.get('opennet_service_relay_enabled')) {
+        if (node.get('opennet_service_relay_enabled')) {
             return ugwStyle;
         }
-        if (feature.get('state') == "offline") {
+        if (node.get('state') == "offline") {
             return offlineStyle;
         } else {
-            if (feature.get('state') == "online") {
+            if (node.get('state') == "online") {
                 return onlineStyle;
             } else {
                 return flappingStyle;
@@ -253,7 +253,7 @@ function createNodeStyle() {
 }
 
 function createStateStyle() {
-    return function(feature, resolution) {
+    return function(node, resolution) {
         return [new ol.style.Style({
             image: new ol.style.Circle({
                 radius: 50,
@@ -262,7 +262,7 @@ function createStateStyle() {
                 }),
             }),
             text: new ol.style.Text({
-                text: feature.getId(),
+                text: node.getId(),
                 fill: new ol.style.Fill({
                     color: 'black'
                 }),
@@ -272,7 +272,7 @@ function createStateStyle() {
 }
 
 function createLinkStyle() {
-    return function(feature, resolution) {
+    return function(link, resolution) {
         var cableStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
                 color: 'rgba(21,136,235,0.2)',
@@ -280,24 +280,21 @@ function createLinkStyle() {
                 lineDash: [1, 4]
             }),
         });
-        if (feature.get('cable')) {
+        // TODO: move "cable" attribute
+        if (link.get('cable')) {
             return [cableStyle];
         } else {
-            etx = feature.get('etx');
-            if (etx) {
-                if (etx > 1.0) {
-                    if (etx >= 1.2) {
-                        aircolor = 'red';
-                    } else {
-                        if (etx >= 1.1) {
-                            aircolor = '#D915EB';
-                        } else {
-                            if (etx >= 1.05) {
-                                aircolor = '#8015EB';
-                            }
-                        }
-                    }
-                } else aircolor = '#1588eb';
+            quality = Math.max(link['endpoints'][0]['quality'], link['endpoints'][1]['quality'])
+            if (quality) {
+                if (quality >= 1.0) {
+                    aircolor = '#1588eb';
+                } else if (etx > 0.95) {
+                    aircolor = '#8015EB';
+                } else if (quality > 0.9) {
+                    aircolor = '#D915EB';
+                } else {
+                    aircolor = 'red';
+                }
             }
             var airStyle = new ol.style.Style({
                 stroke: new ol.style.Stroke({
@@ -383,18 +380,17 @@ function setupPopup() {
 
     map.on('singleclick', function(evt) {
         var coordinate = evt.coordinate;
-        var feature = map.forEachFeatureAtPixel(evt.pixel,
-            function(feature, layer) {
-                return feature;
+        var node = map.forEachFeatureAtPixel(evt.pixel,
+            function(node, layer) {
+                return node;
             });
-        if (feature) {
-            if (feature.get('main_ip')) {
-                var geometry = feature.getGeometry();
-                var coord = geometry.getCoordinates();
-                var ip = feature.get('main_ip');
-                content.innerHTML = getPopupContent(feature)
+        if (node) {
+            if (node.get('main_ip')) {
+                var coord = node.position.coordinates;
+                var ip = node.get('main_ip');
+                content.innerHTML = getPopupContent(node)
                 header = document.getElementById('popup-header');
-                header.innerHTML = "<h1>" + ip + "</h1>" + "<small>" + feature.get('post_address') + "</small>";
+                header.innerHTML = "<h1>" + ip + "</h1>" + "<small>" + node.get('post_address') + "</small>";
                 popoverlay.setPosition(coord);
                 // enable gauge switch (here DOM is populated)
                 $('#buttonday').on('click', function(e) {
@@ -420,8 +416,8 @@ function setupPopup() {
 
     $(map.getViewport()).on('mousemove', function(e) {
         var pixel = map.getEventPixel(e.originalEvent);
-        var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-            if (feature.get('main_ip')) {
+        var hit = map.forEachFeatureAtPixel(pixel, function(node, layer) {
+            if (node.get('main_ip')) {
                 return true;
             }
         });
@@ -433,7 +429,7 @@ function setupPopup() {
     });
 }
 
-function getPopupContent(feature) {
+function getPopupContent(node) {
     function toTimeString(totalNumberOfSeconds) {
         var d = new Date();
         var t = d.getTime();
@@ -455,7 +451,7 @@ function getPopupContent(feature) {
         return val;
     }
 
-    ip = feature.get('main_ip');
+    ip = node.get('main_ip');
     gauge = "<p><img id='gaugelq' width='247' height='137px' src='" + getGaugeImg(ip, "day") + "'/>";
     gauge = gauge +
         '<div class="btn-group btn-group-xs" role="group" aria-label="...">\
@@ -464,17 +460,17 @@ function getPopupContent(feature) {
 		  <button type="button" class="btn btn-default" id="buttonmonth">Monat</button> \
 		  <button type="button" class="btn btn-default" id="buttonyear">Jahr</button> \
 		</div></p>';
-    device = checkEmpty(feature.get('device_model'));
-    board = checkEmpty(feature.get('device_board'));
-    os_type = checkEmpty(feature.get('firmware_type'));
-    os_ver = checkEmpty(feature.get('firmware_release_name'));
-    cpuload = feature.get('system_load_15min');
-    romload = 100.0 - parseFloat(feature.get('device_memory_free')) / parseFloat(feature.get('device_memory_available'))
+    device = checkEmpty(node.get('device_model'));
+    board = checkEmpty(node.get('device_board'));
+    os_type = checkEmpty(node.get('firmware_type'));
+    os_ver = checkEmpty(node.get('firmware_release_name'));
+    cpuload = node.get('system_load_15min');
+    romload = 100.0 - parseFloat(node.get('device_memory_free')) / parseFloat(node.get('device_memory_available'))
     romload = checkEmptyNum(romload.toFixed(2));
-    lastseen = checkEmpty(feature.get('lastseen_timestamp'));
-    uptime = checkEmpty(feature.get('system_uptime'));
-    installtime = checkEmpty(feature.get('firmware_install_timestamp'));
-    operator = checkEmpty(feature.get('owner'));
+    lastseen = checkEmpty(node.get('lastseen_timestamp'));
+    uptime = checkEmpty(node.get('system_uptime'));
+    installtime = checkEmpty(node.get('firmware_install_timestamp'));
+    operator = checkEmpty(node.get('owner'));
     links = "<a href=https://wiki.opennet-initiative.de/wiki/AP" + getApId(ip) + ">Wiki</a> ";
     links = links + "<a href='http://" + ip + "'>Webinterface</a> ";
     links = links + "<a href='http://" + ip + ":8080'>OLSRd</a> ";
@@ -508,13 +504,13 @@ function setupTooltip() {
             left: pixel[0] + 'px',
             top: (pixel[1] - 3) + 'px'
         });
-        var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-            return feature;
+        var node = map.forEachFeatureAtPixel(pixel, function(node, layer) {
+            return node;
         });
-        if (feature) {
-            if (feature.get('main_ip')) {
+        if (node) {
+            if (node.get('main_ip')) {
                 info.tooltip('hide')
-                    .attr('data-original-title', getApId(feature.get('main_ip')))
+                    .attr('data-original-title', getApId(node.get('main_ip')))
                     .tooltip('fixTitle')
                     .tooltip('show');
             }
