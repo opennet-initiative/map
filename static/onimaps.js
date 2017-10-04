@@ -8,7 +8,7 @@ function setupMap() {
         if (location.search.search("ip=") > -1) {
             var ip = location.search.replace('?ip=', '');
             xhttp = new XMLHttpRequest();
-            xhttp.open("GET", "/api/accesspoint/" + ip, false);
+            xhttp.open("GET", "/api/v1/accesspoint/{}?data_format=geojson".format(ip), false);
             xhttp.send();
             repl = JSON.parse(xhttp.responseText);
             zoom = 17;
@@ -91,7 +91,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Links',
             source: new ol.source.Vector({
-                url: '/api/link/',
+                url: '/api/v1/link/?data_format=geojson',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -102,7 +102,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Accesspoints online',
             source: new ol.source.Vector({
-                url: '/api/accesspoint/?status=online',
+                url: '/api/v1/accesspoint/?status=online&data_format=geojson',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -113,7 +113,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Accesspoints instabil',
             source: new ol.source.Vector({
-                url: '/api/accesspoint/?status=flapping',
+                url: '/api/v1/accesspoint/?status=flapping&data_format=geojson',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -124,7 +124,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Accesspoints offline',
             source: new ol.source.Vector({
-                url: '/api/accesspoint/?status=offline',
+                url: '/api/v1/accesspoint/?status=offline&data_format=geojson',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -136,7 +136,7 @@ function setupMap() {
         new ol.layer.Vector({
             title: 'Standorte',
             source: new ol.source.Vector({
-                url: '/api/sites',
+                url: '/api/v1/sites',
                 format: new ol.format.GeoJSON({
                     //defaultDataProjection :'EPSG:4326',
                     projection: 'EPSG:3857'
@@ -538,7 +538,7 @@ function getGaugeImg(ip, rangeStr) {
 
 function setupRoute(ips) {
     var routeSource = new ol.source.Vector({
-        url: '/api/links?route=' + ips,
+        url: '/api/v1/links?route={}&data_format=geojson'.format(ips),
         format: new ol.format.GeoJSON({
             //defaultDataProjection :'EPSG:4326',
             projection: 'EPSG:3857'
