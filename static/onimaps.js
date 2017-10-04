@@ -335,7 +335,7 @@ function setupGeolocation() {
     geolocation.on('change', function(evt) {
         map.getView().setCenter(geolocation.getPosition());
         map.getView().setZoom(18);
-        window.console.log(geolocation.getPosition());
+        // window.console.log(geolocation.getPosition());
     });
 
 
