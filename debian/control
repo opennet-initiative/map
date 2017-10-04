@@ -20,7 +20,10 @@ Description: Informationssammlung für die Opennet Initiative.
 
 Package: on-map-web
 Architecture: all
-Depends: adduser, python3, python3-on-map, ${misc:Depends}
+# libjs-openlayers ist in Debian leider in v2.13 (statt 3.x) vorhanden
+# daher ist es als Kopie eingebettet
+Depends: adduser, libjs-bootstrap, libjs-jquery, python3,
+ python3-on-map, ${misc:Depends}
 Recommends: uwsgi, uwsgi-plugin-python3
 Suggests: apache2
 Description: Kartendarstellung für die Opennet Initiative.
