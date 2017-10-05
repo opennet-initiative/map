@@ -334,10 +334,14 @@ function setupGeolocation() {
         projection: map.getView().getProjection(),
         tracking: true,
     });
+    /* center the map on the current position, if the position of the user
+     * (as reported by its browser) changed.
+     */
     geolocation.on('change', function(evt) {
-        map.getView().setCenter(geolocation.getPosition());
-        map.getView().setZoom(18);
-        // window.console.log(geolocation.getPosition());
+        if (evt.type == "change:position") {
+            map.getView().setCenter(geolocation.getPosition());
+            map.getView().setZoom(18);
+        };
     });
 
 
