@@ -422,8 +422,8 @@ function setupPopup() {
 
     $(map.getViewport()).on('mousemove', function(e) {
         var pixel = map.getEventPixel(e.originalEvent);
-        var hit = map.forEachFeatureAtPixel(pixel, function(node, layer) {
-            if (node.get('main_ip')) {
+        var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+            if (feature.get('main_ip') || feature.get('quality')) {
                 return true;
             }
         });
@@ -519,6 +519,11 @@ function setupTooltip() {
                     .attr('data-original-title', getApId(node.get('main_ip')))
                     .tooltip('fixTitle')
                     .tooltip('show');
+            } else if (feature.get('quality')) {
+                info.tooltip('hide')
+                    .attr('data-original-title', getLinkDescription(feature))
+                    .tooltip('fixTitle')
+                    .tooltip('show');
             }
         } else {
             info.tooltip('hide');
@@ -533,6 +538,18 @@ function setupTooltip() {
         displayFeatureInfo(map.getEventPixel(evt.originalEvent));
     });
 }
+
+
+function getLinkDescription(feature) {
+    // display the quality in percent
+    var quality_text = "Quality: " + (feature.get('quality') * 100).toFixed(0) + "%";
+    if (feature.get('wifi_ssid')) {
+        return "SSID: " + feature.get('wifi_ssid') + "<br/>" + quality_text;
+    } else {
+        return quality_text;
+    }
+}
+
 
 function getApId(ip) {
     return ip.replace("192.168.", "");
