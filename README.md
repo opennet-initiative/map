@@ -1,18 +1,10 @@
-onimap ist das Kartenportal des Opennet.
+on-map ist das Kartenportal der Opennet Initiative
 
-# Administration 
+Die Karte besteht lediglich aus statischen Dateien (javascript + css).
+Daten werden von der Geronimo-API (v2) bezogen.
 
-* apt-get install python3 virtualenvwrapper
-* `virtualenv --distribute -p /usr/bin/python3.2 ~/.virtualenvs/on-map`
-* `workon on-map`
-* git repo clonen und reinwechseln
-* `pip install -r requirements.txt`
-* Lokal testen: `python server.py`
-* Webserver-Konfiguration für WSGI anpassen ([siehe bottlepy docs](http://bottlepy.org/docs/dev/deployment.html))
-
-# Entwicklung
-
-* Python 3 mit virtualenv
-* bottlepy webframework
-* Openlayers 3
-* greift auf api.oni.de zu, cached und transformiert für geojson
+Folgende externe Daten sind (leider) eingebettet:
+* openlayers3: in Debian wird leider nur Openlayers v2 ausgeliefert
+  Quelle: http://openlayers.org/
+* ok3-layerswitcher: leider nicht für Debian paketiert
+  Quelle (wahrscheinlich): https://github.com/walkermatt/ol3-layerswitcher
