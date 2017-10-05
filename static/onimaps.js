@@ -393,10 +393,9 @@ function setupPopup() {
         if (feature) {
             if (feature.get('main_ip')) {
                 var coord = feature.getGeometry().getCoordinates();
-                var ip = feature.get('main_ip');
-                content.innerHTML = getPopupContent(feature);
+                content.innerHTML = getAccessPointPopupContent(feature);
                 header = document.getElementById('popup-header');
-                header.innerHTML = "<h1>" + ip + "</h1>" + "<small>" + node.get('post_address') + "</small>";
+                header.innerHTML = "<h1>" + feature.get('main_ip') + "</h1>" + "<small>" + feature.get('post_address') + "</small>";
                 popoverlay.setPosition(coord);
                 // enable gauge switch (here DOM is populated)
                 $('#buttonday').on('click', function(e) {
@@ -435,7 +434,8 @@ function setupPopup() {
     });
 }
 
-function getPopupContent(node) {
+
+function getAccessPointPopupContent(feature) {
     function toTimeString(totalNumberOfSeconds) {
         var d = new Date();
         var t = d.getTime();
