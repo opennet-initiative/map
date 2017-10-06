@@ -561,7 +561,7 @@ function getLinkDescription(feature) {
 
 
 function getApId(ip) {
-    return ip.replace("192.168.", "");
+    return ip.replace("192.168.", "AP");
 }
 
 function getGaugeImg(ip, rangeStr) {
