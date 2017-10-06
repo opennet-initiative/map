@@ -8,7 +8,7 @@ function setupMap() {
         if (location.search.search("ip=") > -1) {
             var ip = location.search.replace('?ip=', '');
             xhttp = new XMLHttpRequest();
-            xhttp.open("GET", "/api/v1/accesspoint/{}?data_format=geojson".format(ip), false);
+            xhttp.open("GET", "/api/v1/accesspoint/" + ip + "?data_format=geojson", false);
             xhttp.send();
             repl = JSON.parse(xhttp.responseText);
             zoom = 17;
@@ -559,7 +559,7 @@ function getGaugeImg(ip, rangeStr) {
 
 function setupRoute(ips) {
     var routeSource = new ol.source.Vector({
-        url: '/api/v1/links?route={}&data_format=geojson'.format(ips),
+        url: '/api/v1/links?route=' + ips + '&data_format=geojson',
         format: new ol.format.GeoJSON({
             //defaultDataProjection :'EPSG:4326',
             projection: 'EPSG:3857'
