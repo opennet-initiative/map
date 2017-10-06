@@ -233,27 +233,25 @@ function createNodeStyle() {
             })
         }),
     })];
-    return function(node, resolution) {
-        if (node.get('opennet_captive_portal_enabled')) {
+    return function(feature, resolution) {
+        if (feature.get('opennet_captive_portal_enabled')) {
             return hotspotStyle;
         }
-        if (node.get('opennet_service_relay_enabled')) {
+        if (feature.get('opennet_service_relay_enabled')) {
             return ugwStyle;
         }
-        if (node.get('state') == "offline") {
+        if (feature.get('state') == "offline") {
             return offlineStyle;
+        } else if (feature.get('state') == "online") {
+            return onlineStyle;
         } else {
-            if (node.get('state') == "online") {
-                return onlineStyle;
-            } else {
-                return flappingStyle;
-            }
+            return flappingStyle;
         }
     };
 }
 
 function createStateStyle() {
-    return function(node, resolution) {
+    return function(feature, resolution) {
         return [new ol.style.Style({
             image: new ol.style.Circle({
                 radius: 50,
@@ -262,7 +260,7 @@ function createStateStyle() {
                 }),
             }),
             text: new ol.style.Text({
-                text: node.getId(),
+                text: feature.getId(),
                 fill: new ol.style.Fill({
                     color: 'black'
                 }),
@@ -272,7 +270,7 @@ function createStateStyle() {
 }
 
 function createLinkStyle() {
-    return function(link, resolution) {
+    return function(feature, resolution) {
         var cableStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
                 color: 'rgba(21,136,235,0.2)',
@@ -386,9 +384,9 @@ function setupPopup() {
 
     map.on('singleclick', function(evt) {
         var coordinate = evt.coordinate;
-        var node = map.forEachFeatureAtPixel(evt.pixel,
-            function(node, layer) {
-                return node;
+        var feature = map.forEachFeatureAtPixel(evt.pixel,
+            function(feature, layer) {
+                return feature;
             });
         if (feature) {
             if (feature.get('main_ip')) {
@@ -457,7 +455,7 @@ function getAccessPointPopupContent(feature) {
         return val;
     }
 
-    ip = node.get('main_ip');
+    ip = feature.get('main_ip');
     gauge = "<p><img id='gaugelq' width='247' height='137px' src='" + getGaugeImg(ip, "day") + "'/>";
     gauge = gauge +
         '<div class="btn-group btn-group-xs" role="group" aria-label="...">\
@@ -466,17 +464,17 @@ function getAccessPointPopupContent(feature) {
 		  <button type="button" class="btn btn-default" id="buttonmonth">Monat</button> \
 		  <button type="button" class="btn btn-default" id="buttonyear">Jahr</button> \
 		</div></p>';
-    device = checkEmpty(node.get('device_model'));
-    board = checkEmpty(node.get('device_board'));
-    os_type = checkEmpty(node.get('firmware_type'));
-    os_ver = checkEmpty(node.get('firmware_release_name'));
-    cpuload = node.get('system_load_15min');
-    romload = 100.0 - parseFloat(node.get('device_memory_free')) / parseFloat(node.get('device_memory_available'))
+    device = checkEmpty(feature.get('device_model'));
+    board = checkEmpty(feature.get('device_board'));
+    os_type = checkEmpty(feature.get('firmware_type'));
+    os_ver = checkEmpty(feature.get('firmware_release_name'));
+    cpuload = feature.get('system_load_15min');
+    romload = 100.0 - parseFloat(feature.get('device_memory_free')) / parseFloat(feature.get('device_memory_available'))
     romload = checkEmptyNum(romload.toFixed(2));
-    lastseen = checkEmpty(node.get('lastseen_timestamp'));
-    uptime = checkEmpty(node.get('system_uptime'));
-    installtime = checkEmpty(node.get('firmware_install_timestamp'));
-    operator = checkEmpty(node.get('owner'));
+    lastseen = checkEmpty(feature.get('lastseen_timestamp'));
+    uptime = checkEmpty(feature.get('system_uptime'));
+    installtime = checkEmpty(feature.get('firmware_install_timestamp'));
+    operator = checkEmpty(feature.get('owner'));
     links = "<a href=https://wiki.opennet-initiative.de/wiki/AP" + getApId(ip) + ">Wiki</a> ";
     links = links + "<a href='http://" + ip + "'>Webinterface</a> ";
     links = links + "<a href='http://" + ip + ":8080'>OLSRd</a> ";
@@ -510,13 +508,13 @@ function setupTooltip() {
             left: pixel[0] + 'px',
             top: (pixel[1] - 3) + 'px'
         });
-        var node = map.forEachFeatureAtPixel(pixel, function(node, layer) {
-            return node;
+        var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+            return feature;
         });
-        if (node) {
-            if (node.get('main_ip')) {
+        if (feature) {
+            if (feature.get('main_ip')) {
                 info.tooltip('hide')
-                    .attr('data-original-title', getApId(node.get('main_ip')))
+                    .attr('data-original-title', getApId(feature.get('main_ip')))
                     .tooltip('fixTitle')
                     .tooltip('show');
             } else if (feature.get('quality')) {
