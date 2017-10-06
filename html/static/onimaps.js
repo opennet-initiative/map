@@ -473,7 +473,7 @@ function getAccessPointPopupContent(feature) {
     cpuload = feature.get('system_load_15min');
     romload = 100.0 - parseFloat(feature.get('device_memory_free')) / parseFloat(feature.get('device_memory_available'))
     romload = checkEmptyNum(romload.toFixed(2));
-    lastseen = checkEmpty(feature.get('lastseen_timestamp'));
+    lastseen = new Date(checkEmpty(feature.get('lastseen_timestamp')));
     uptime = checkEmpty(feature.get('system_uptime'));
     installtime = checkEmpty(feature.get('firmware_install_timestamp'));
     operator = checkEmpty(feature.get('owner'));
@@ -481,6 +481,15 @@ function getAccessPointPopupContent(feature) {
     links = links + "<a href='http://" + ip + "'>Webinterface</a> ";
     links = links + "<a href='http://" + ip + ":8080'>OLSRd</a> ";
     links = links + '<a href="https://map.on-i.de/?ip=' + ip + '">teilen</a>';
+    var lastseen_minutes_ago = (new Date() - lastseen) / 1000 / 60;
+    var lastseen_string;
+    if (lastseen_minutes_ago < 100) {
+        lastseen_string = "vor " + lastseen_minutes_ago.toFixed(0) + " Minuten";
+    } else if (lastseen_minutes_ago < 24 * 60) {
+        lastseen_string = "vor " + lastseen_minutes_ago.toFixed(0) / 60 + " Stunden";
+    } else {
+        lastseen_string = lastseen.toLocaleDateString() + " " + lastseen.toLocaleTimeString();
+    }
     return gauge +
         "<p>" +
         device + "<br>" +
@@ -488,7 +497,7 @@ function getAccessPointPopupContent(feature) {
         "CPU: " + cpuload + "% " + "ROM: " + romload + "%<br>" +
         "Betreut von: <a>" + operator + "</a>" +
         "</p>" + "<p>" +
-        "Zuletzt gesehen: " + (new Date(lastseen)).toLocaleDateString() + "<br>" +
+        "Zuletzt gesehen: " + lastseen_string + "<br>" +
         "Letzter Neustart: " + toTimeString(parseFloat(uptime)) + "<br>" +
         "Erstinstallation: " + (new Date(installtime)).toLocaleDateString() + "<br>" +
         "</p>" +
