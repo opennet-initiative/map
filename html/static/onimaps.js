@@ -240,12 +240,14 @@ function createNodeStyle() {
         if (feature.get('opennet_service_relay_enabled')) {
             return ugwStyle;
         }
-        if (feature.get('state') == "offline") {
+        var lastseen_age_minutes = ((new Date() - new Date(feature.get('lastseen_timestamp')))
+                                    / 1000 / 60);
+        if (lastseen_age_minutes > 30 * 24 * 60) {
             return offlineStyle;
-        } else if (feature.get('state') == "online") {
-            return onlineStyle;
-        } else {
+        } else if (lastseen_age_minutes > 30) {
             return flappingStyle;
+        } else {
+            return onlineStyle;
         }
     };
 }
