@@ -1,8 +1,12 @@
 This package contains configuration files for apache2 for serving static files.
 
-Enable the apache2 site:
+Enable the necessary components and restart apache:
+ a2enmod macro
+ a2enconf javascript-common.conf
+ a2enconf on-map-macro.conf
  a2ensite on-map.conf
  service apache2 restart
 
-Probably you will want to reconfigure the ServerName and the URL of the
-Geronimo API in /etc/apache2/sites-available/on-map.conf.
+Configuration:
+* adjust the URL of the Geronimo API in /etc/apache2/conf-available/on-map.conf
+* adjust the ServerName in /etc/apache2/sites-available/on-map.conf

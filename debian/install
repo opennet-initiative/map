@@ -1,2 +1,3 @@
 examples/apache2/on-map.conf /etc/apache2/sites-available/
+examples/apache2/on-map-macro.conf /etc/apache2/conf-available/
 html /usr/share/on-map/
