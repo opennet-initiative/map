@@ -486,7 +486,7 @@ function getAccessPointPopupContent(feature) {
     if (lastseen_minutes_ago < 100) {
         lastseen_string = "vor " + lastseen_minutes_ago.toFixed(0) + " Minuten";
     } else if (lastseen_minutes_ago < 24 * 60) {
-        lastseen_string = "vor " + lastseen_minutes_ago.toFixed(0) / 60 + " Stunden";
+        lastseen_string = "vor " + (lastseen_minutes_ago / 60).toFixed(0) + " Stunden";
     } else {
         lastseen_string = lastseen.toLocaleDateString() + " " + lastseen.toLocaleTimeString();
     }
