@@ -1,4 +1,5 @@
 var map;
+var on_overlay_group;
 
 function setupMap() {
     var zoom = 9,
@@ -32,7 +33,7 @@ function setupMap() {
         }
     }
     // Karte
-    var overlayGroup = new ol.layer.Group({
+    on_overlay_group = new ol.layer.Group({
         title: 'Opennet',
         layers: []
     });
@@ -74,7 +75,7 @@ function setupMap() {
                     }),
                 ]
             }),
-            overlayGroup
+            on_overlay_group
         ],
         view: new ol.View({
             center: ol.proj.transform(center, 'EPSG:4326', 'EPSG:3857'),
@@ -87,7 +88,7 @@ function setupMap() {
     })
     map.addControl(layerSwitcher);
     // ONI-Daten
-    overlayGroup.getLayers().extend([
+    on_overlay_group.getLayers().extend([
         new ol.layer.Vector({
             title: 'Links',
             source: new ol.source.Vector({
@@ -151,11 +152,31 @@ function setupMap() {
     if (route) {
         setupRoute(route);
     }
-    // refresh strategies
-    window.setInterval(function() {
-        // TODO: hier karte aktualisieren
-    }, 5000);
 }
+
+
+function updateLayerDataSources() {
+    var formatter = new ol.format.GeoJSON();
+    on_overlay_group.getLayers().forEach(function (layer) {
+        var source = layer.getSource();
+        var url = source.getUrl();
+        // refresh only layers with a source URL (i.e. not the headquarter)
+        if (url) {
+            jQuery.ajax(url, {
+                dataType: 'json',
+                success: function (data, textStatus, jqXHR) {
+                    source.clear(); // remove existing features
+                    source.addFeatures(formatter.readFeatures(data,
+                                                              {featureProjection: 'EPSG:3857'}));
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    window.console.log("Failed to update layer (" + url + "): " + errorThrown);
+                }
+            });
+        }
+    });
+}
+
 
 function createNodeStyle() {
     // online|offline|flapping
