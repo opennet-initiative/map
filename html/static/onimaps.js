@@ -95,59 +95,29 @@ function setupMap() {
     on_overlay_group.getLayers().extend([
         new ol.layer.Vector({
             title: 'Links',
-            source: new ol.source.Vector({
-                url: '/api/v1/link/?data_format=geojson',
-                format: new ol.format.GeoJSON({
-                    //defaultDataProjection :'EPSG:4326',
-                    projection: 'EPSG:3857'
-                })
-            }),
-            style: createLinkStyle(),
+            source: get_layer_vector_source('/api/v1/link/?'),
+            style: createLinkStyle()
         }),
         new ol.layer.Vector({
             title: 'Accesspoints online',
-            source: new ol.source.Vector({
-                url: '/api/v1/accesspoint/?status=online&data_format=geojson',
-                format: new ol.format.GeoJSON({
-                    //defaultDataProjection :'EPSG:4326',
-                    projection: 'EPSG:3857'
-                })
-            }),
-            style: (createNodeStyle())
+            source: get_layer_vector_source('/api/v1/accesspoint/?status=online&'),
+            style: createNodeStyle()
         }),
         new ol.layer.Vector({
             title: 'Accesspoints instabil',
-            source: new ol.source.Vector({
-                url: '/api/v1/accesspoint/?status=flapping&data_format=geojson',
-                format: new ol.format.GeoJSON({
-                    //defaultDataProjection :'EPSG:4326',
-                    projection: 'EPSG:3857'
-                })
-            }),
-            style: (createNodeStyle())
+            source: get_layer_vector_source('/api/v1/accesspoint/?status=flapping&'),
+            style: createNodeStyle()
         }),
         new ol.layer.Vector({
             title: 'Accesspoints offline',
-            source: new ol.source.Vector({
-                url: '/api/v1/accesspoint/?status=offline&data_format=geojson',
-                format: new ol.format.GeoJSON({
-                    //defaultDataProjection :'EPSG:4326',
-                    projection: 'EPSG:3857'
-                })
-            }),
-            style: (createNodeStyle()),
+            source: get_layer_vector_source('/api/v1/accesspoint/?status=offline&'),
+            style: createNodeStyle(),
             visible: false
         }),
         new ol.layer.Vector({
             title: 'Standorte',
-            source: new ol.source.Vector({
-                url: '/api/v1/sites/?data_format=geojson',
-                format: new ol.format.GeoJSON({
-                    //defaultDataProjection :'EPSG:4326',
-                    projection: 'EPSG:3857'
-                })
-            }),
-            style: (createStateStyle()),
+            source: get_layer_vector_source('/api/v1/site/?'),
+            style: createStateStyle(),
             visible: false
         }),
         getHeadquarter()
@@ -156,6 +126,31 @@ function setupMap() {
     if (route) {
         setupRoute(route);
     }
+}
+
+
+function get_layer_vector_source(api_prefix) {
+    var formatter = new ol.format.GeoJSON();
+    var vectorSource = new ol.source.Vector({
+        loader: function(extent, resolution, projection) {
+            var latlon_extent = ol.geom.Polygon.fromExtent(extent).transform(
+                projection, projection_latlon).getExtent();
+            var url = api_prefix + 'data_format=geojson&in_bbox=' + latlon_extent.join(',');
+            jQuery.ajax(url, {
+                dataType: 'json',
+                success: function(data) {
+                    vectorSource.addFeatures(formatter.readFeatures(
+                        data, {featureProjection: projection_visual}));
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    window.console.log("Failed to load layer (" + url + "): " + errorThrown);
+                }
+            });
+        },
+        strategy: ol.loadingstrategy.bbox,
+        format: new ol.format.GeoJSON({projection: projection_latlon})
+    });
+    return vectorSource;
 }
 
 
