@@ -2,6 +2,7 @@ var map;
 var on_overlay_group;
 var projection_visual = 'EPSG:3857';
 var projection_latlon = 'EPSG:4326';
+var headquarter_location = [12.12311, 54.09137];
 
 
 function setupMap() {
@@ -336,7 +337,7 @@ function createLinkStyle() {
 function getHeadquarter() {
     var hqFeature = new ol.Feature({
         geometry: new ol.geom.Point(ol.proj.transform(
-            [12.12311, 54.09137], projection_latlon, projection_visual)),
+            headquarter_location, projection_latlon, projection_visual)),
         name: 'Vereinsraum'
     });
     var hqStyle = new ol.style.Style({
