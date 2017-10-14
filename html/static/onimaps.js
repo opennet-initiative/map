@@ -7,9 +7,29 @@ var startup_map_center = [12.5876, 54.0118];
 var startup_map_zoom = 9;
 
 
-function setupMap() {
+/* initialize all components */
+function setupOpennetMap() {
+    var args = parseQueryArguments();
+    setupMap(args["zoom"], args["center"]);
+    setupGeolocation();
+    if (args["route"]) {
+        setupRoute(args["route"]);
+    }
+    setupPermalinks();
+    setupPopup();
+    setupTooltip();
+}
+
+
+/* parse information from the requested URL (as query arguments or anchor link)
+ *   - ?ip=192.168.1.120: center the map on the location of an accesspoint (used in the firmware)
+ *   - ?route=192.168.1.120,192.168.1.96,192.168.2.36,192.168.1.79: visualize a route along
+ *   - #17;12.122250;54.090832: center the map on this location with this zoom (used by permalinks)
+ */
+function parseQueryArguments() {
     var map_center = startup_map_center;
     var map_zoom = startup_map_zoom;
+
     // ip parsen
     if (location.search) {
         if (location.search.search("ip=") > -1) {
@@ -20,12 +40,13 @@ function setupMap() {
             repl = JSON.parse(xhttp.responseText);
             map_zoom = 17;
             map_center = repl.position.coordinates;
-        } else {
-            if (location.search.search("route=") > -1) {
-                var route = location.search.replace('?route=', '');
-            }
         }
     }
+
+    if (location.search.search("route=") > -1) {
+        var route = location.search.replace('?route=', '');
+    }
+
     // permalinks parsen
     if (window.location.hash !== '') {
         var hash = window.location.hash.replace('#', '');
@@ -38,6 +59,11 @@ function setupMap() {
             ];
         }
     }
+    return {zoom: map_zoom, center: map_center, route: route}
+}
+
+
+function setupMap(map_zoom, map_center) {
     // Karte
     on_overlay_group = new ol.layer.Group({
         title: 'Opennet',
@@ -124,13 +150,14 @@ function setupMap() {
         }),
         getHeadquarter()
     ]);
-    setupGeolocation();
-    if (route) {
-        setupRoute(route);
-    }
 }
 
 
+/* generate a vector (with data) for a layer
+ * The 'api_prefix' should end in a question mark (?) or an ampersand (&). This function adds
+ * more details to the query string (requesting geojson data and restricting the requested data to
+ * the bounding box of the currently visible area).
+ */
 function get_layer_vector_source(api_prefix) {
     var formatter = new ol.format.GeoJSON();
     var vectorSource = new ol.source.Vector({
@@ -156,6 +183,7 @@ function get_layer_vector_source(api_prefix) {
 }
 
 
+/* this function is periodically called to update the data sources of all layers */
 function updateLayerDataSources() {
     var formatter = new ol.format.GeoJSON();
     on_overlay_group.getLayers().forEach(function (layer) {
