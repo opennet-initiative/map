@@ -3,11 +3,13 @@ var on_overlay_group;
 var projection_visual = 'EPSG:3857';
 var projection_latlon = 'EPSG:4326';
 var headquarter_location = [12.12311, 54.09137];
+var startup_map_center = [12.5876, 54.0118];
+var startup_map_zoom = 9;
 
 
 function setupMap() {
-    var zoom = 9,
-        center = [12.5876, 54.0118];
+    var map_center = startup_map_center;
+    var map_zoom = startup_map_zoom;
     // ip parsen
     if (location.search) {
         if (location.search.search("ip=") > -1) {
@@ -16,8 +18,8 @@ function setupMap() {
             xhttp.open("GET", "/api/v1/accesspoint/" + ip + "?data_format=geojson", false);
             xhttp.send();
             repl = JSON.parse(xhttp.responseText);
-            zoom = 17;
-            center = repl.position.coordinates;
+            map_zoom = 17;
+            map_center = repl.position.coordinates;
         } else {
             if (location.search.search("route=") > -1) {
                 var route = location.search.replace('?route=', '');
@@ -29,8 +31,8 @@ function setupMap() {
         var hash = window.location.hash.replace('#', '');
         var parts = hash.split(';');
         if (parts.length === 3) {
-            zoom = parseInt(parts[0], 10);
-            center = [
+            map_zoom = parseInt(parts[0], 10);
+            map_center = [
                 parseFloat(parts[1]),
                 parseFloat(parts[2])
             ];
@@ -82,8 +84,8 @@ function setupMap() {
             on_overlay_group
         ],
         view: new ol.View({
-            center: ol.proj.transform(center, projection_latlon, projection_visual),
-            zoom: zoom,
+            center: ol.proj.transform(map_center, projection_latlon, projection_visual),
+            zoom: map_zoom,
             projection: projection_visual
         })
     });
