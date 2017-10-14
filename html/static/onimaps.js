@@ -1,5 +1,8 @@
 var map;
 var on_overlay_group;
+var projection_visual = 'EPSG:3857';
+var projection_latlon = 'EPSG:4326';
+
 
 function setupMap() {
     var zoom = 9,
@@ -78,9 +81,9 @@ function setupMap() {
             on_overlay_group
         ],
         view: new ol.View({
-            center: ol.proj.transform(center, 'EPSG:4326', 'EPSG:3857'),
+            center: ol.proj.transform(center, projection_latlon, projection_visual),
             zoom: zoom,
-            projection: 'EPSG:3857'
+            projection: projection_visual
         })
     });
     var layerSwitcher = new ol.control.LayerSwitcher({
@@ -164,10 +167,10 @@ function updateLayerDataSources() {
         if (url) {
             jQuery.ajax(url, {
                 dataType: 'json',
-                success: function (data, textStatus, jqXHR) {
-                    source.clear(); // remove existing features
-                    source.addFeatures(formatter.readFeatures(data,
-                                                              {featureProjection: 'EPSG:3857'}));
+                success: function (data) {
+                    source.clear();
+                    source.addFeatures(formatter.readFeatures(
+			    data, {featureProjection: projection_visual}));
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     window.console.log("Failed to update layer (" + url + "): " + errorThrown);
@@ -332,7 +335,8 @@ function createLinkStyle() {
 
 function getHeadquarter() {
     var hqFeature = new ol.Feature({
-        geometry: new ol.geom.Point(ol.proj.transform([12.12311, 54.09137], 'EPSG:4326', 'EPSG:3857')),
+        geometry: new ol.geom.Point(ol.proj.transform(
+            [12.12311, 54.09137], projection_latlon, projection_visual)),
         name: 'Vereinsraum'
     });
     var hqStyle = new ol.style.Style({
@@ -373,7 +377,7 @@ function setupPermalinks() {
         map.on('moveend', function() {
             var view = map.getView();
             var center = view.getCenter();
-            center = ol.proj.transform(center, 'EPSG:3857', 'EPSG:4326'),
+            center = ol.proj.transform(center, projection_visual, projection_latlon),
                 window.location.hash = view.getZoom() + ';' + center[0] + ';' + center[1];
         });
     }
@@ -593,8 +597,7 @@ function setupRoute(ips) {
     var routeSource = new ol.source.Vector({
         url: '/api/v1/links?route=' + ips + '&data_format=geojson',
         format: new ol.format.GeoJSON({
-            //defaultDataProjection :'EPSG:4326',
-            projection: 'EPSG:3857'
+            projection: projection_visual
         }),
     });
     var routeStyle = new ol.style.Style({
