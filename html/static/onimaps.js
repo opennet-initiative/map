@@ -610,14 +610,20 @@ function setupTooltip() {
 }
 
 
+/* assemble a descriptive string for a link
+ * Sadly we cannot force linebreaks - thus the output is not really nicely formatted.
+ */
 function getLinkDescription(feature) {
+    var quality_details = [];
     // display the quality in percent
-    var quality_text = "Quality: " + (feature.get('quality') * 100).toFixed(0) + "%";
+    quality_details.push('Quality: ' + (feature.get('quality') * 100).toFixed(0) + '%');
     if (feature.get('wifi_ssid')) {
-        return "SSID: " + feature.get('wifi_ssid') + "<br/>" + quality_text;
-    } else {
-        return quality_text;
+        quality_details.push('SSID: ' + feature.get('wifi_ssid'));
     }
+    if (feature.get('endpoints')) {
+        quality_details.push('Peers: ' + feature.get('endpoints').join(' - '));
+    }
+    return quality_details.join(' / ')
 }
 
 
