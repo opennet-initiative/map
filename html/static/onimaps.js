@@ -30,22 +30,32 @@ function parseQueryArguments() {
     var map_center = startup_map_center;
     var map_zoom = startup_map_zoom;
 
-    // ip parsen
-    if (location.search) {
-        if (location.search.search("ip=") > -1) {
-            var ip = location.search.replace('?ip=', '');
-            xhttp = new XMLHttpRequest();
-            xhttp.open("GET", "/api/v1/accesspoint/" + ip + "?data_format=geojson", false);
-            xhttp.send();
-            repl = JSON.parse(xhttp.responseText);
-            map_zoom = 17;
-            map_center = repl.position.coordinates;
-        }
+    /* there really seems to be no better way to parse query arguments via jquery :(
+     * Source: https://stackoverflow.com/a/901144
+     */
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
 
-    if (location.search.search("route=") > -1) {
-        var route = location.search.replace('?route=', '');
+    // ip parsen
+    var query_ip = getParameterByName("ip");
+    if (query_ip) {
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/api/v1/accesspoint/" + query_ip + "?data_format=geojson", false);
+        xhttp.send();
+        repl = JSON.parse(xhttp.responseText);
+        map_zoom = 17;
+        map_center = repl.position.coordinates;
     }
+
+    // a "route" can be a comma-separated list of IP addresses
+    var query_route = getParameterByName("route");
 
     // permalinks parsen
     if (window.location.hash !== '') {
@@ -59,7 +69,7 @@ function parseQueryArguments() {
             ];
         }
     }
-    return {zoom: map_zoom, center: map_center, route: route}
+    return {zoom: map_zoom, center: map_center, route: query_route}
 }
 
 
