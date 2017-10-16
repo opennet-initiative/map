@@ -10,11 +10,8 @@ var startup_map_zoom = 9;
 /* initialize all components */
 function setupOpennetMap() {
     var args = parseQueryArguments();
-    setupMap(args["zoom"], args["center"]);
+    setupMap(args["zoom"], args["center"], args["test_for_special_link"]);
     setupGeolocation();
-    if (args["route"]) {
-        setupRoute(args["route"]);
-    }
     setupPermalinks();
     setupPopup();
     setupTooltip();
@@ -24,6 +21,7 @@ function setupOpennetMap() {
 /* parse information from the requested URL (as query arguments or anchor link)
  *   - ?ip=192.168.1.120: center the map on the location of an accesspoint (used in the firmware)
  *   - ?route=192.168.1.120,192.168.1.96,192.168.2.36,192.168.1.79: visualize a route along
+ *     multiple accesspoints
  *   - #17;12.122250;54.090832: center the map on this location with this zoom (used by permalinks)
  */
 function parseQueryArguments() {
@@ -43,19 +41,48 @@ function parseQueryArguments() {
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
 
-    // ip parsen
-    var query_ip = getParameterByName("ip");
-    if (query_ip) {
+    function getAccessPointPosition(ap_ip) {
         xhttp = new XMLHttpRequest();
-        xhttp.open("GET", "/api/v1/accesspoint/" + query_ip + "?data_format=geojson", false);
+        xhttp.open("GET", "/api/v1/accesspoint/" + ap_ip + "?data_format=geojson", false);
         xhttp.send();
         repl = JSON.parse(xhttp.responseText);
-        map_zoom = 17;
-        map_center = repl.position.coordinates;
+        return repl.position.coordinates;
     }
 
-    // a "route" can be a comma-separated list of IP addresses
+    // an (optional) "route" is a comma-separated list of IP addresses
     var query_route = getParameterByName("route");
+    var special_links = [];
+    if (query_route) {
+        var main_ips = query_route.split(',');
+        // Assemble a list of strings that will help us match links (given by 'endpoints') quickly.
+	// Example: route='a,c,b,d' -> ['a c', 'b c', 'b d']
+        // Each pair of hops is sorted alphabetically and separated by space.
+	for (var i = 0; i + 1 < main_ips.length; i++) {
+            special_links.push(main_ips.slice(i, i + 2).sort().join(' '));
+        }
+        // center the map on the first node (arbitrarily picked)
+        if (main_ips) {
+            map_zoom = 14;
+            map_center = getAccessPointPosition(main_ips[0]);
+        }
+    }
+    function test_for_special_link(link) {
+        if (special_links && link) {
+            var endpoints = link.get('endpoints');
+            if (endpoints && (endpoints.length == 2) &&
+                    (special_links.indexOf(endpoints.sort().join(' ')) >= 0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // center map on given "ip"
+    var query_ip = getParameterByName("ip");
+    if (query_ip) {
+        map_zoom = 17;
+        map_center = getAccessPointPosition(query_ip);
+    }
 
     // permalinks parsen
     if (window.location.hash !== '') {
@@ -69,11 +96,11 @@ function parseQueryArguments() {
             ];
         }
     }
-    return {zoom: map_zoom, center: map_center, route: query_route}
+    return {zoom: map_zoom, center: map_center, test_for_special_link: test_for_special_link}
 }
 
 
-function setupMap(map_zoom, map_center) {
+function setupMap(map_zoom, map_center, test_for_special_link) {
     // Karte
     on_overlay_group = new ol.layer.Group({
         title: 'Opennet',
@@ -134,7 +161,7 @@ function setupMap(map_zoom, map_center) {
         new ol.layer.Vector({
             title: 'Links',
             source: get_layer_vector_source('/api/v1/link/?'),
-            style: createLinkStyle()
+            style: createLinkStyle(test_for_special_link)
         }),
         new ol.layer.Vector({
             title: 'Accesspoints online',
@@ -331,7 +358,7 @@ function createStateStyle() {
     };
 }
 
-function createLinkStyle() {
+function createLinkStyle(test_for_special_link) {
     return function(feature, resolution) {
         var cableStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
@@ -340,8 +367,20 @@ function createLinkStyle() {
                 lineDash: [1, 4]
             }),
         });
-        // TODO: move "cable" attribute
-        if (feature.get('cable')) {
+        var specialStyle = new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(255, 255, 255, 0.6)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'rgba(255,255,0,0.8)',
+                width: 5,
+                lineDash: [4, 8]
+            }),
+        });
+        if (test_for_special_link(feature)) {
+            // "special" links can be defined via the "route" query argument
+            return [specialStyle];
+	} else if (!feature.get('is_wireless')) {
             return [cableStyle];
         } else {
             quality = feature.get('quality');
@@ -633,75 +672,4 @@ function getApId(ip) {
 
 function getGaugeImg(ip, rangeStr) {
     return "https://www.opennet-initiative.de/graph/ap.php?ap=" + getApId(ip) + "&width=150&height=50&color=001eff&low_color=ff1e00&medium_color=00ff1e&style=AREA&low_style=AREA&medium_style=AREA&lowerlimit=1&range=" + rangeStr
-}
-
-function setupRoute(ips) {
-    var routeSource = new ol.source.Vector({
-        url: '/api/v1/links?route=' + ips + '&data_format=geojson',
-        format: new ol.format.GeoJSON({
-            projection: projection_visual
-        }),
-    });
-    var routeStyle = new ol.style.Style({
-        fill: new ol.style.Fill({
-            color: 'rgba(255, 255, 255, 0.6)'
-        }),
-        stroke: new ol.style.Stroke({
-            color: 'rgba(255,255,0,0.8)',
-            width: 5,
-            lineDash: [4, 8]
-        }),
-    });
-    var routeLayer = new ol.layer.Vector({
-        title: 'Route',
-        source: routeSource,
-        style: (routeStyle),
-    });
-    map.addLayer(routeLayer);
-    routeLayer.setZIndex(6);
-    routeSource.on('addfeature', function(e) {
-        //		flash(e.feature);
-    });
-    routeSource.on("change", function(evt) {
-        var extent = routeSource.getExtent();
-        map.getView().fit(extent, map.getSize());
-    });
-}
-
-function flash(feature) {
-    // animierte Routen
-    var start = new Date().getTime();
-    var listenerKey;
-
-    function animate(event) {
-        // blinken
-        var vectorContext = event.vectorContext;
-        var frameState = event.frameState;
-        var flashGeom = feature.getGeometry().clone();
-        var elapsed = frameState.time - start;
-        var elapsedRatio = elapsed / duration;
-        // radius will be 5 at start and 30 at end.
-        var radius = ol.easing.easeOut(elapsedRatio) * 25 + 5;
-        var opacity = ol.easing.easeOut(1 - elapsedRatio);
-
-        var flashStyle = new ol.style.Circle({
-            radius: radius,
-            snapToPixel: false,
-            stroke: new ol.style.Stroke({
-                color: 'rgba(255, 0, 0, ' + opacity + ')',
-                width: 1,
-                opacity: opacity
-            })
-        });
-
-        vectorContext.setImageStyle(flashStyle);
-        vectorContext.drawPointGeometry(flashGeom, null);
-        if (elapsed > duration) {
-            ol.Observable.unByKey(listenerKey);
-            return;
-        }
-        // tell OL3 to continue postcompose animation
-        frameState.animate = true;
-    }
-    listenerKey = map.on('postcompose', animate);
 }
