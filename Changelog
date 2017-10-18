@@ -1,0 +1,7 @@
+Version 1.1.0 - 2017-10-19
+ * Debian-Paketierung
+ * API-Dienst entfernt (stattdessen: direkte Verwendung der Geronimo-API)
+ * Informationen zu Links einblenden
+ * Sonderbehandlung von statischen Sites (fest codiert) entfernt
+     * Verbindungen zwischen "Sites" sind nun also wieder (störend) deutlich
+ * regelmäßige Aktualisierung der Layer-Daten
