@@ -6,5 +6,5 @@ Daten werden von der Geronimo-API (v2) bezogen.
 Folgende externe Daten sind (leider) eingebettet:
 * openlayers3: in Debian wird leider nur Openlayers v2 ausgeliefert
   Quelle: http://openlayers.org/
-* ok3-layerswitcher: leider nicht für Debian paketiert
+* ol3-layerswitcher: leider nicht für Debian paketiert
   Quelle (wahrscheinlich): https://github.com/walkermatt/ol3-layerswitcher
