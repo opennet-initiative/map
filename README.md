@@ -31,3 +31,10 @@ Folgende externe Daten sind (leider) eingebettet:
 </VirtualHost>
 
 Die notwendigen javascript-Bibliotheken (siehe "Depends" in debian/control) müssen zuvor installiert werden.
+
+
+# Entwicklung
+
+* die Logik der Web-Anwendung befindet sich in `html/static/onimaps.js`
+* deb-Paket erstellen: `make dist-deb`
+* deb-Paket auf einem entfernten Host installieren: `make deploy-deb-remote DEPLOY_TARGET=root@example.on`
