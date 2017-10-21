@@ -11,7 +11,9 @@ var startup_map_zoom = 9;
 function setupOpennetMap() {
     var args = parseQueryArguments();
     setupMap(args["zoom"], args["center"], args["test_for_special_link"]);
-    setupGeolocation();
+    if (!args["position_override"]) {
+        setupGeolocation();
+    }
     setupPermalinks();
     setupPopup();
     setupTooltip();
@@ -27,6 +29,7 @@ function setupOpennetMap() {
 function parseQueryArguments() {
     var map_center = startup_map_center;
     var map_zoom = startup_map_zoom;
+    var position_override = false;
 
     /* there really seems to be no better way to parse query arguments via jquery :(
      * Source: https://stackoverflow.com/a/901144
@@ -64,6 +67,7 @@ function parseQueryArguments() {
         if (main_ips) {
             map_zoom = 14;
             map_center = getAccessPointPosition(main_ips[0]);
+            position_override = true;
         }
     }
     function test_for_special_link(link) {
@@ -82,6 +86,7 @@ function parseQueryArguments() {
     if (query_ip) {
         map_zoom = 17;
         map_center = getAccessPointPosition(query_ip);
+        position_override = true;
     }
 
     // permalinks parsen
@@ -94,9 +99,13 @@ function parseQueryArguments() {
                 parseFloat(parts[1]),
                 parseFloat(parts[2])
             ];
+            position_override = true;
         }
     }
-    return {zoom: map_zoom, center: map_center, test_for_special_link: test_for_special_link}
+    return {zoom: map_zoom,
+            center: map_center,
+            test_for_special_link: test_for_special_link,
+            position_override: position_override}
 }
 
 
