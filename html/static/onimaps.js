@@ -65,7 +65,7 @@ function parseQueryArguments() {
         }
         // center the map on the first node (arbitrarily picked)
         if (main_ips) {
-            map_zoom = 14;
+            map_zoom = 13;
             map_center = getAccessPointPosition(main_ips[0]);
             position_override = true;
         }
