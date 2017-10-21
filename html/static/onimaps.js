@@ -119,7 +119,8 @@ function setupMap(map_zoom, map_center, test_for_special_link) {
         target: document.getElementById('map'),
         controls: ol.control.defaults().extend([
             new ol.control.FullScreen(),
-            new ol.control.ScaleLine()
+            new ol.control.ScaleLine(),
+            new ol.control.Attribution()
         ]),
         layers: [
             // Hintergrundkarten
