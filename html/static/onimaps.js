@@ -24,6 +24,7 @@ function setupOpennetMap() {
  *   - ?ip=192.168.1.120: center the map on the location of an accesspoint (used in the firmware)
  *   - ?route=192.168.1.120,192.168.1.96,192.168.2.36,192.168.1.79: visualize a route along
  *     multiple accesspoints
+ *   - ?bbox=12.1;54.0,12.2,54.2: show the given bounding box given in latitude and longitude
  *   - #17;12.122250;54.090832: center the map on this location with this zoom (used by permalinks)
  */
 function parseQueryArguments() {
@@ -87,6 +88,28 @@ function parseQueryArguments() {
         map_zoom = 17;
         map_center = getAccessPointPosition(query_ip);
         position_override = true;
+    }
+
+    // parse bounding box query argument
+    var query_bbox =getParameterByName("bbox");
+    if (query_bbox) {
+        var pos = query_bbox.split(';');
+	for (var i = 0; i < pos.length; i++) {
+            pos[i] = parseFloat(pos[i]);
+        }
+        if ((pos.length == 4) && !isNaN(pos[0]) && !isNaN(pos[1]) && !isNaN(pos[2]) && !isNaN(pos[3])) {
+            map_center = [(pos[0] + pos[2]) / 2, (pos[1] + pos[3]) / 2];
+            var maxsize = Math.max(Math.abs(pos[0] - pos[2]), Math.abs(pos[1] - pos[3]));
+            /* calculate a suitable zoom level for this map size
+             * 19 -> maximum zoom level
+	     * 8 -> minumum zoom level
+             * 0.001 -> length (in latitude / longitude) of one "screen" at the maximum zoom level
+             * 2 -> openlayer's zoom doubles the size of the map with each step
+             */
+            map_zoom = 19 - Math.round(Math.log(maxsize / 0.001) / Math.log(2));
+            map_zoom = Math.max(8, Math.min(map_zoom, 19));
+            position_override = true;
+        }
     }
 
     // permalinks parsen
@@ -211,7 +234,12 @@ function get_layer_vector_source(api_prefix) {
         loader: function(extent, resolution, projection) {
             var latlon_extent = ol.geom.Polygon.fromExtent(extent).transform(
                 projection, projection_latlon).getExtent();
-            var url = api_prefix + 'data_format=geojson&in_bbox=' + latlon_extent.join(',');
+            var url = api_prefix + 'data_format=geojson';
+            // append the "in_bbox" parameter only of all values are valid
+            if (!isNaN(latlon_extent[0]) && !isNaN(latlon_extent[1])
+                    && !isNaN(latlon_extent[2]) && !isNaN(latlon_extent[3])) {
+                url += '&in_bbox=' + latlon_extent.join(',');
+            }
             jQuery.ajax(url, {
                 dataType: 'json',
                 success: function(data) {

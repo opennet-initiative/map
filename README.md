@@ -2,7 +2,16 @@
 on-map ist das Kartenportal der Opennet Initiative
 
 
+# Besondere Abfragen
+
+* https://map.opennet-initiative.de/?ip=192.168.1.120
+* https://map.opennet-initiative.de/?route=192.168.1.120,192.168.1.96,192.168.2.36
+* https://map.opennet-initiative.de/?bbox=12.0;54.0;12.2;54.4
+* https://map.opennet-initiative.de/#12;12.1837;54.3217
+
+
 # Architektur
+
 Die Karte besteht lediglich aus statischen Dateien (javascript + css).
 Daten werden von der Geronimo-API (v2) bezogen.
 
