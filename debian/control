@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Lars Kruse <devel@sumpfralle.de>
 Standards-Version: 4.0.0
-Homepage: https://on-i.de/wiki/Karte
+Homepage: https://opennet-initiative.de/wiki/Karte
 Vcs-Git: https://dev.opennet-initiative.de/git/on_map.git
 Vcs-Browser: http://dev.opennet-initiative.de/browser/on_map
 

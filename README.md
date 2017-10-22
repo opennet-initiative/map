@@ -29,8 +29,8 @@ Folgende externe Daten sind (leider) eingebettet:
     SSLProxyEngine On
     SSLProxyCheckPeerCN off
     SSLProxyCheckPeerExpire off
-    ProxyPass               /api    https://api.on-i.de/api
-    ProxyPassReverse        /api    https://api.on-i.de/api
+    ProxyPass               /api    https://api.opennet-initiative.de/api
+    ProxyPassReverse        /api    https://api.opennet-initiative.de/api
     <Directory /home/foo/opennet/on_map/html>
         Require all granted
     </Directory>

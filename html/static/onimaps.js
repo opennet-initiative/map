@@ -618,7 +618,7 @@ function getAccessPointPopupContent(feature) {
     links = "<a href=https://wiki.opennet-initiative.de/wiki/AP" + getApId(ip) + ">Wiki</a> ";
     links = links + "<a href='http://" + ip + "'>Webinterface</a> ";
     links = links + "<a href='http://" + ip + ":8080'>OLSRd</a> ";
-    links = links + '<a href="https://map.on-i.de/?ip=' + ip + '">teilen</a>';
+    links = links + '<a href="https://map.opennet-initiative.de/?ip=' + ip + '">teilen</a>';
     var lastseen_minutes_ago = (new Date() - lastseen) / 1000 / 60;
     var lastseen_string;
     if (lastseen_minutes_ago < 100) {
