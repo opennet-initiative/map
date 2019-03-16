@@ -684,7 +684,7 @@ function setupTooltip() {
                     .tooltip('show');
             } else if (feature.get('quality')) {
                 info.tooltip('hide')
-                    .attr('data-original-title', getLinkDescription(feature))
+                    .attr('data-original-title', getLinkDescriptionLines(feature).join(' / '))
                     .tooltip('fixTitle')
                     .tooltip('show');
             }
@@ -706,7 +706,7 @@ function setupTooltip() {
 /* assemble a descriptive string for a link
  * Sadly we cannot force linebreaks - thus the output is not really nicely formatted.
  */
-function getLinkDescription(feature) {
+function getLinkDescriptionLines(feature) {
     var quality_details = [];
     // display the quality in percent
     quality_details.push('Quality: ' + (feature.get('quality') * 100).toFixed(0) + '%');
@@ -717,7 +717,7 @@ function getLinkDescription(feature) {
         quality_details.push('Peers: ' + feature.get('endpoints').join(' - '));
     }
     quality_details.push('Distance: ' + Math.round(getRoutingLinkDistance(feature)) + 'm');
-    return quality_details.join(' / ')
+    return quality_details;
 }
 
 
