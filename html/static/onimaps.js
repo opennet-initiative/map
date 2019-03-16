@@ -317,13 +317,12 @@ function createNodeStyle() {
     })];
     var flappingStyle = [new ol.style.Style({
         image: new ol.style.Circle({
-            radius: 5,
+            radius: 4,
             fill: new ol.style.Fill({
-                color: 'rgba(255,0,0,0.8)',
-                width: 2
+                color: 'rgba(255,0,0,0.6)',
             }),
             stroke: new ol.style.Stroke({
-                color: 'red',
+                color: 'rgba(220,0,0,0.8)',
                 width: 1
             })
         }),
