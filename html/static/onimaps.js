@@ -396,6 +396,12 @@ function createStateStyle() {
     };
 }
 
+function getRoutingLinkDistance(feature) {
+    // Somehow "getLength" returns a value that is too high (quite consistently with the factor 1.7).
+    // The reason is unknown: maybe something with the projection is wrong?
+    return feature.get("geometry").getLength() / 1.7;
+}
+
 function createLinkStyle(test_for_special_link) {
     return function(feature, resolution) {
         var cableStyle = new ol.style.Style({
@@ -422,11 +428,10 @@ function createLinkStyle(test_for_special_link) {
                 lineDash: [4, 8]
             }),
         });
-        distance = feature.get("geometry").getLength();
         if (test_for_special_link(feature)) {
             // "special" links can be defined via the "route" query argument
             return [specialStyle];
-	} else if (distance > 30000) {
+	} else if (getRoutingLinkDistance(feature) > 30000) {
             // these links are probably upstream links to hosted servers
             return [longDistanceStyle];
 	} else if (!feature.get('is_wireless')) {
@@ -711,7 +716,7 @@ function getLinkDescription(feature) {
     if (feature.get('endpoints')) {
         quality_details.push('Peers: ' + feature.get('endpoints').join(' - '));
     }
-    quality_details.push('Distance: ' + Math.round(feature.get("geometry").getLength()) + 'm');
+    quality_details.push('Distance: ' + Math.round(getRoutingLinkDistance(feature)) + 'm');
     return quality_details.join(' / ')
 }
 
