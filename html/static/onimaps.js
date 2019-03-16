@@ -410,13 +410,6 @@ function createLinkStyle(test_for_special_link) {
                 lineDash: [1, 3]
             }),
         });
-        var longDistanceStyle = new ol.style.Style({
-            stroke: new ol.style.Stroke({
-                color: 'rgba(21,136,235,0.3)',
-                width: 2,
-                lineDash: [1, 3]
-            }),
-        });
         var specialStyle = new ol.style.Style({
             fill: new ol.style.Fill({
                 color: 'rgba(255, 255, 255, 0.6)'
@@ -431,8 +424,8 @@ function createLinkStyle(test_for_special_link) {
             // "special" links can be defined via the "route" query argument
             return [specialStyle];
 	} else if (getRoutingLinkDistance(feature) > 30000) {
-            // these links are probably upstream links to hosted servers
-            return [longDistanceStyle];
+            // these links are probably upstream links to hosted servers - we do not need to show them
+            return [];
 	} else if (!feature.get('is_wireless')) {
             return [cableStyle];
         } else {
