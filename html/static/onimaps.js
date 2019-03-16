@@ -700,6 +700,7 @@ function getLinkDescription(feature) {
     if (feature.get('endpoints')) {
         quality_details.push('Peers: ' + feature.get('endpoints').join(' - '));
     }
+    quality_details.push('Distance: ' + Math.round(feature.get("geometry").getLength()) + 'm');
     return quality_details.join(' / ')
 }
 
