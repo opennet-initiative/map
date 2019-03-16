@@ -400,9 +400,9 @@ function createLinkStyle(test_for_special_link) {
     return function(feature, resolution) {
         var cableStyle = new ol.style.Style({
             stroke: new ol.style.Stroke({
-                color: 'rgba(21,136,235,0.2)',
-                width: 1,
-                lineDash: [1, 4]
+                color: 'rgba(21,136,235,0.4)',
+                width: 2,
+                lineDash: [1, 3]
             }),
         });
         var specialStyle = new ol.style.Style({
