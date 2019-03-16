@@ -439,15 +439,21 @@ function createLinkStyle(test_for_special_link) {
         } else {
             quality = feature.get('quality');
             if (quality) {
-                if (quality >= 1.0) {
-                    aircolor = '#1588eb';
-                } else if (quality > 0.95) {
-                    aircolor = '#8015EB';
-                } else if (quality > 0.9) {
-                    aircolor = '#D915EB';
-                } else {
-                    aircolor = 'red';
-                }
+                // color scheme source: http://colorbrewer2.org/#type=diverging&scheme=RdYlBu&n=11
+                // The first "blue" value is omitted (it is too bright). The second is replace with out original color.
+                const color_quality_map = [
+                    {"threshold": 1.00, "color": '#1588eb'},
+                    {"threshold": 0.99, "color": '#74add1'},
+                    {"threshold": 0.98, "color": '#abd9e9'},
+                    {"threshold": 0.96, "color": '#e0f3f8'},
+                    {"threshold": 0.93, "color": '#ffffbf'},
+                    {"threshold": 0.90, "color": '#fee090'},
+                    {"threshold": 0.80, "color": '#fdae61'},
+                    {"threshold": 0.70, "color": '#f46d43'},
+                    {"threshold": 0.60, "color": '#d73027'},
+                    {"threshold": 0.00, "color": '#a50026'},
+                ];
+                aircolor = color_quality_map.find(function(v) { return quality >= v.threshold; }).color;
             } else {
                 aircolor = 'yellow';
             }
