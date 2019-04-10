@@ -610,10 +610,12 @@ function getAccessPointPopupContent(feature) {
     uptime = checkEmpty(feature.get('system_uptime'));
     installtime = checkEmpty(feature.get('firmware_install_timestamp'));
     operator = checkEmpty(feature.get('owner'));
-    links = "<a href=https://wiki.opennet-initiative.de/wiki/" + getApId(ip) + ">Wiki</a> ";
-    links = links + "<a href='http://" + ip + "'>Webinterface</a> ";
-    links = links + "<a href='http://" + ip + ":8080'>OLSRd</a> ";
-    links = links + '<a href="https://map.opennet-initiative.de/?ip=' + ip + '">teilen</a>';
+    links = [
+        '<a href="http://' + ip + '" title="Web-Interface des Accesspoints">Web</a>',
+        '<a href="https://api.opennet-initiative.de/api/v1/accesspoint/' + ip + '" title="Informationen der Opennet-API zum Accesspoint">API</a>',
+        '<a href="https://monitor.opennet-initiative.de/ap/' + getApId(ip) + '" title="nur vorhanden, falls auf AP aktiviert">Monitoring</a>',
+        '<a href="https://map.opennet-initiative.de/?ip=' + ip + '" title="Link zur Position auf der Karte">teilen</a>',
+    ].join(" | ");
     var lastseen_minutes_ago = (new Date() - lastseen) / 1000 / 60;
     var lastseen_string;
     if (lastseen_minutes_ago < 100) {
