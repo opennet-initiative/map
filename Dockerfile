@@ -1,4 +1,4 @@
-FROM debian:8
+FROM debian:9
 
 RUN set -eux; \
  apt-get update; \
@@ -7,6 +7,7 @@ RUN set -eux; \
    libjs-bootstrap \
    libjs-jquery \
    javascript-common \
+   libapache2-mod-php \
  ;
 
 COPY ./examples/apache2-docker/on-map-macro.conf /etc/apache2/conf-available/
@@ -20,6 +21,7 @@ RUN set -eux; \
  a2enmod proxy_http; \
  a2enmod headers; \
  a2enmod ssl; \
+ a2enmod rewrite; \
  a2enconf javascript-common.conf; \
  a2enconf on-map-macro.conf; \
  a2ensite on-map.conf; \
@@ -31,9 +33,11 @@ CMD apachectl -D FOREGROUND
 #
 # For starting the docker container do the following:
 #
-# Build docker container:
-#   sudo docker build -t on-map-debian .
-# Start docker container:
-#   sudo docker run -dit --name on-map-app -p 8080:80 on-map-debian
+# Build docker image:
+#   sudo docker build -t debian/on-map .
+# Start docker container in background:
+#   sudo docker run -dit -p 8080:80 debian/on-map
+# Start with interactive console
+#   sudo docker run -it -p 8080:80 debian/on-map /bin/bash
 # Open website:
 #   open in browser: http://localhost:8080/

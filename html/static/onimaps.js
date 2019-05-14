@@ -154,7 +154,7 @@ function setupMap(map_zoom, map_center, test_for_special_link) {
                         title: 'OpenStreetMap',
                         type: 'base',
                         visible: true,
-                        source: new ol.source.OSM(),
+                        source: new ol.source.OSM({url: '/tiles/{z}/{x}/{y}.png'}),
                     }),
                 ]
             }),
