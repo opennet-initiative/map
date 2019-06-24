@@ -1,3 +1,9 @@
+on-map (1.2.4-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Lars Kruse <devel@sumpfralle.de>  Mon, 24 Jun 2019 23:08:41 +0200
+
 on-map (1.2.3-1) unstable; urgency=medium
 
   * New upstream release
