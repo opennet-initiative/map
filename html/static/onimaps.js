@@ -613,7 +613,7 @@ function getAccessPointPopupContent(feature) {
     links = [
         '<a href="http://' + ip + '" title="Web-Interface des Accesspoints">Web</a>',
         '<a href="https://api.opennet-initiative.de/api/v1/accesspoint/' + ip + '" title="Informationen der Opennet-API zum Accesspoint">API</a>',
-        '<a href="https://monitor.opennet-initiative.de/ap/' + getApId(ip) + '" title="nur vorhanden, falls auf AP aktiviert">Monitoring</a>',
+        '<a href="https://monitor.opennet-initiative.de/ap/' + getApId(ip) + '/index.html" title="nur vorhanden, falls auf AP aktiviert">Monitoring</a>',
         '<a href="https://map.opennet-initiative.de/?ip=' + ip + '" title="Link zur Position auf der Karte">teilen</a>',
     ].join(" | ");
     var lastseen_minutes_ago = (new Date() - lastseen) / 1000 / 60;
