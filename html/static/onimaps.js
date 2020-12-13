@@ -5,6 +5,8 @@ var projection_latlon = 'EPSG:4326';
 var headquarter_location = [12.12311, 54.09137];
 var startup_map_center = [12.5876, 54.0118];
 var startup_map_zoom = 9;
+const FLAPPING_STATE_BEGIN_MINS = 30;
+const OFFLINE_STATE_BEGIN_DAYS = 30;
 
 
 /* initialize all components */
@@ -173,9 +175,15 @@ function setupMap(map_zoom, map_center, test_for_special_link) {
     // ONI-Daten
     on_overlay_group.getLayers().extend([
         new ol.layer.Vector({
-            title: 'Links',
-            source: get_layer_vector_source('/api/v1/link/?with_redundant_site_links=0&'),
+            title: 'Links online',
+            source: get_layer_vector_source('/api/v1/link/?with_redundant_site_links=0status=online&'),
             style: createLinkStyle(test_for_special_link)
+        }),
+        new ol.layer.Vector({
+            title: 'Links instabil (max. 30d)',
+            source: get_layer_vector_source('/api/v1/link/?with_redundant_site_links=0&status=flapping&'),
+            style: createLinkStyle(test_for_special_link),
+            visible: false
         }),
         new ol.layer.Vector({
             title: 'Accesspoints online',
@@ -347,9 +355,9 @@ function createNodeStyle() {
         }
         var lastseen_age_minutes = ((new Date() - new Date(feature.get('lastseen_timestamp')))
                                     / 1000 / 60);
-        if (lastseen_age_minutes > 30 * 24 * 60) {
+        if (lastseen_age_minutes > OFFLINE_STATE_BEGIN_DAYS * 24 * 60) {
             return offlineStyle;
-        } else if (lastseen_age_minutes > 30) {
+        } else if (lastseen_age_minutes > FLAPPING_STATE_BEGIN_MINS) {
             return flappingStyle;
         } else {
             return onlineStyle;
@@ -401,6 +409,19 @@ function createLinkStyle(test_for_special_link) {
                 lineDash: [4, 8]
             }),
         });
+        var flappingStyle = new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(197, 27, 125, 0.6)' // pink
+            }),
+            stroke: new ol.style.Stroke({
+                color: 'rgba(197, 27, 125, 0.8)',
+                width: 5,
+                lineDash: [4, 8]
+            }),
+        });
+        var lastseen_age_minutes = ((new Date() - new Date(feature.get('timestamp')))
+                                    / 1000 / 60);
+
         if (test_for_special_link(feature)) {
             // "special" links can be defined via the "route" query argument
             return [specialStyle];
@@ -409,7 +430,11 @@ function createLinkStyle(test_for_special_link) {
             return [];
 	} else if (!feature.get('is_wireless')) {
             return [cableStyle];
+  } else if ((lastseen_age_minutes > FLAPPING_STATE_BEGIN_MINS)
+              && (lastseen_age_minutes < (OFFLINE_STATE_BEGIN_DAYS * 24 * 60))) {
+                return [flappingStyle];
         } else {
+            // show online links
             quality = feature.get('quality');
             if (quality) {
                 // color scheme source: http://colorbrewer2.org/#type=diverging&scheme=RdYlBu&n=11
