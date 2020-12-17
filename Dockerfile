@@ -7,7 +7,6 @@ RUN set -eux; \
    libjs-bootstrap \
    libjs-jquery \
    javascript-common \
-   libapache2-mod-php \
  ;
 
 COPY ./examples/apache2-docker/on-map-macro.conf /etc/apache2/conf-available/
@@ -21,7 +20,6 @@ RUN set -eux; \
  a2enmod proxy_http; \
  a2enmod headers; \
  a2enmod ssl; \
- a2enmod rewrite; \
  a2enconf javascript-common.conf; \
  a2enconf on-map-macro.conf; \
  a2ensite on-map.conf; \
