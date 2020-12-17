@@ -1,3 +1,9 @@
+on-map (1.2.5-1) focal; urgency=medium
+
+  * New upstream release
+
+ -- Martin Garbe <leo@lini.local>  Thu, 17 Dec 2020 22:27:29 +0100
+
 on-map (1.2.4-1) unstable; urgency=medium
 
   * New upstream release
