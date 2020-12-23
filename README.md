@@ -45,8 +45,10 @@ Die notwendigen javascript-Bibliotheken (siehe "Depends" in debian/control) müs
 # Entwicklung
 
 * die Logik der Web-Anwendung befindet sich in `html/static/onimaps.js`
+* neues Path-Release erstellen: `make release-patch"
 * deb-Paket erstellen: `make dist-deb`
 * deb-Paket auf einem entfernten Host installieren: `make deploy-deb-remote DEPLOY_TARGET=root@example.on`
+* deb-Paket auf einem entfernten Host installieren ohne das Paket zu signieren: `make deploy-deb-remote DEPLOY_TARGET=root@example.on DEBIAN_BUILDPACKAGE_COMMAND="dpkg-buildpackage --no-sign"`
 
 # Testen mit Docker
 
