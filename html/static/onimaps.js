@@ -176,7 +176,7 @@ function setupMap(map_zoom, map_center, test_for_special_link) {
     on_overlay_group.getLayers().extend([
         new ol.layer.Vector({
             title: 'Links online',
-            source: get_layer_vector_source('/api/v1/link/?with_redundant_site_links=0status=online&'),
+            source: get_layer_vector_source('/api/v1/link/?with_redundant_site_links=0&status=online&'),
             style: createLinkStyle(test_for_special_link)
         }),
         new ol.layer.Vector({
