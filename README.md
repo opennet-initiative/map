@@ -1,3 +1,5 @@
+[![CodeQL](https://github.com/opennet-initiative/map/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/opennet-initiative/map/actions/workflows/codeql-analysis.yml)
+
 # Überblick
 on-map ist das Kartenportal der Opennet Initiative
 
