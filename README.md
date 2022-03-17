@@ -26,20 +26,20 @@ Folgende externe Daten sind (leider) eingebettet:
 
 # Beispiel-Konfiguration für lokale Tests (apache2)
 
-<VirtualHost *>
-    DocumentRoot /home/foo/opennet/on_map/html/
-    SSLProxyEngine On
-    SSLProxyCheckPeerCN off
-    SSLProxyCheckPeerExpire off
-    ProxyPass               /api    https://api.opennet-initiative.de/api
-    ProxyPassReverse        /api    https://api.opennet-initiative.de/api
-    <Directory /home/foo/opennet/on_map/html>
-        Require all granted
-    </Directory>
-    <Directory /usr/share/javascript>
-        Require all granted
-    </Directory>
-</VirtualHost>
+    <VirtualHost *>
+        DocumentRoot /home/foo/opennet/on_map/html/
+        SSLProxyEngine On
+        SSLProxyCheckPeerCN off
+        SSLProxyCheckPeerExpire off
+        ProxyPass               /api    https://api.opennet-initiative.de/api
+        ProxyPassReverse        /api    https://api.opennet-initiative.de/api
+        <Directory /home/foo/opennet/on_map/html>
+            Require all granted
+        </Directory>
+        <Directory /usr/share/javascript>
+            Require all granted
+        </Directory>
+    </VirtualHost>
 
 Die notwendigen javascript-Bibliotheken (siehe "Depends" in debian/control) müssen zuvor installiert werden.
 
